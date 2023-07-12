@@ -47,6 +47,9 @@ class StockDetailsViewModel(
             is StockDetailsIntent.EditOnClick -> {
                 setState { copy(event = StockDetailsEvent.ShowToast(intent.message)) }
             }
+            is StockDetailsIntent.MoreActionsOnClick -> {
+                setState { copy(event = StockDetailsEvent.ShowWebView) }
+            }
             is StockDetailsIntent.SetIdleEvent -> {
                 setState { copy(event = StockDetailsEvent.Idle) }
             }

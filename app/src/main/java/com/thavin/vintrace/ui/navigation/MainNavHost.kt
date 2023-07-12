@@ -9,6 +9,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.thavin.vintrace.ui.stock.StockScreen
 import com.thavin.vintrace.ui.stock_details.StockDetailsScreen
+import com.thavin.vintrace.ui.stock_details.components.MoreActionsWebView
 
 @Composable
 fun MainNavHost(
@@ -36,8 +37,13 @@ fun MainNavHost(
                 componentOnClick = {
                     navController.navigate(Routes.STOCK_DETAILS.route + "/$it")
                 },
-                backOnClick = { navController.popBackStack() }
+                backOnClick = { navController.popBackStack() },
+                moreActionsOnClick = { navController.navigate(Routes.MORE_ACTIONS_WEB_VIEW.route) }
             )
+        }
+
+        composable(route = Routes.MORE_ACTIONS_WEB_VIEW.route) {
+            MoreActionsWebView()
         }
     }
 }

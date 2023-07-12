@@ -53,7 +53,8 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun StockDetailsScreen(
     componentOnClick: (String) -> Unit,
-    backOnClick: () -> Unit
+    backOnClick: () -> Unit,
+    moreActionsOnClick: () -> Unit
 ) {
     val stockDetailsViewModel = koinViewModel<StockDetailsViewModel>()
     val state = stockDetailsViewModel.state
@@ -69,6 +70,11 @@ fun StockDetailsScreen(
         is StockDetailsEvent.ShowToast -> {
             stockDetailsViewModel.processIntent(StockDetailsIntent.SetIdleEvent)
             Toast.makeText(LocalContext.current, state.event.message, Toast.LENGTH_SHORT).show()
+        }
+
+        is StockDetailsEvent.ShowWebView -> {
+            stockDetailsViewModel.processIntent(StockDetailsIntent.SetIdleEvent)
+            moreActionsOnClick()
         }
 
         else -> {}
@@ -99,7 +105,9 @@ fun StockDetailsScreen(
                 editOnClick = { message ->
                     stockDetailsViewModel.processIntent(StockDetailsIntent.EditOnClick(message))
                 },
-                moreActionsOnClick = {}
+                moreActionsOnClick = {
+                    stockDetailsViewModel.processIntent(StockDetailsIntent.MoreActionsOnClick)
+                }
             )
         }
     }

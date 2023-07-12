@@ -18,4 +18,5 @@
 
     <!-- Other -->
     <string name="edit_button_toast">This feature hasn\'t been implemented!</string>
+    <string name="vintrace_home_url">https://www.vintrace.com/</string>
 </resources>
