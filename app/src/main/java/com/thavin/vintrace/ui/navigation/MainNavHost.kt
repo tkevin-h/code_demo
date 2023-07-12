@@ -36,7 +36,7 @@ fun MainNavHost(
                 componentOnClick = {
                     navController.navigate(Routes.STOCK_DETAILS.route + "/$it")
                 },
-                onBack = { navController.popBackStack() }
+                backOnClick = { navController.popBackStack() }
             )
         }
     }

@@ -1,5 +1,6 @@
 package com.thavin.vintrace.ui.stock_details
 
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -40,6 +41,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -66,7 +68,7 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun StockDetailsScreen(
     componentOnClick: (String) -> Unit,
-    onBack: () -> Unit
+    backOnClick: () -> Unit
 ) {
     val stockDetailsViewModel = koinViewModel<StockDetailsViewModel>()
     val state = stockDetailsViewModel.state
@@ -77,6 +79,11 @@ fun StockDetailsScreen(
         is StockDetailsEvent.Navigate -> {
             stockDetailsViewModel.processIntent(StockDetailsIntent.SetIdleEvent)
             componentOnClick(state.event.id)
+        }
+
+        is StockDetailsEvent.ShowToast -> {
+            stockDetailsViewModel.processIntent(StockDetailsIntent.SetIdleEvent)
+            Toast.makeText(LocalContext.current, state.event.message, Toast.LENGTH_SHORT).show()
         }
 
         else -> {}
@@ -102,7 +109,12 @@ fun StockDetailsScreen(
                 components = stockComponents,
                 componentOnClick = { id ->
                     stockDetailsViewModel.processIntent(StockDetailsIntent.ComponentOnClick(id))
-                }
+                },
+                backOnClick = backOnClick,
+                editOnClick = { message ->
+                    stockDetailsViewModel.processIntent(StockDetailsIntent.EditOnClick(message))
+                },
+                moreActionsOnClick = {}
             )
         }
     }
@@ -123,7 +135,10 @@ private fun StockDetailsContent(
     inProduction: Int,
     available: Int,
     components: List<StockComponents>,
-    componentOnClick: (String) -> Unit
+    componentOnClick: (String) -> Unit,
+    backOnClick: () -> Unit,
+    editOnClick: (String) -> Unit,
+    moreActionsOnClick: () -> Unit
 ) {
     val lazyListState = rememberLazyListState()
     val overlapHeight = with(LocalDensity.current) {
@@ -136,35 +151,54 @@ private fun StockDetailsContent(
         }
     }
 
-    val imageResources = images.map {
-        when (it) {
-            ImageTypes.WINE1.endpoint -> {
-                R.drawable.img_wine_flowers
-            }
+    val imageResources = if (images.isEmpty()) {
+        listOf(R.drawable.img_generic)
+    } else {
+        images.map {
+            when (it) {
+                ImageTypes.WINE1.endpoint -> {
+                    R.drawable.img_wine_flowers
+                }
 
-            ImageTypes.WINE2.endpoint -> {
-                R.drawable.img_wine_grapes
-            }
+                ImageTypes.WINE2.endpoint -> {
+                    R.drawable.img_wine_grapes
+                }
 
-            ImageTypes.WINE3.endpoint -> {
-                R.drawable.img_wine_strawberry
-            }
+                ImageTypes.WINE3.endpoint -> {
+                    R.drawable.img_wine_strawberry
+                }
 
-            ImageTypes.WINE4.endpoint -> {
-                R.drawable.img_wine_table
-            }
+                ImageTypes.WINE4.endpoint -> {
+                    R.drawable.img_wine_table
+                }
 
-            else -> {
-                R.drawable.img_generic
+                else -> {
+                    R.drawable.img_generic
+                }
             }
         }
     }
 
+    val editToastMessage = stringResource(id = R.string.edit_button_toast)
+
     Box {
-        CollapsedTopBar(modifier = Modifier.zIndex(2f), isCollapsed = isCollapsed)
+        CollapsedTopBar(
+            modifier = Modifier.zIndex(2f),
+            isCollapsed = isCollapsed,
+            backOnClick = backOnClick,
+            editOnClick = editOnClick,
+            moreActionsOnClick = moreActionsOnClick
+        )
 
         LazyColumn(state = lazyListState) {
-            item { ExpandedTopBar(headerImages = imageResources) }
+            item {
+                ExpandedTopBar(
+                    headerImages = imageResources,
+                    backOnClick = backOnClick,
+                    editOnClick = editOnClick,
+                    moreActionsOnClick = moreActionsOnClick
+                )
+            }
 
             item {
                 AnimatedVisibility(visible = !isCollapsed) {
@@ -178,7 +212,6 @@ private fun StockDetailsContent(
                         unitName = unitName
                     )
                 }
-                Spacer(modifier = Modifier.height(DimenSmall))
             }
 
             item {
@@ -190,7 +223,9 @@ private fun StockDetailsContent(
                         modifier = Modifier.align(Alignment.CenterVertically)
                     )
                     Spacer(modifier = Modifier.weight(1f))
-                    TextButton(onClick = { /*TODO*/ }) {
+                    TextButton(
+                        onClick = { editOnClick(editToastMessage) }
+                    ) {
                         Text(text = stringResource(id = R.string.edit_button))
                     }
                 }
@@ -207,26 +242,28 @@ private fun StockDetailsContent(
                 Spacer(modifier = Modifier.height(DimenSmall))
             }
 
-            item {
-                Row(modifier = Modifier.fillMaxWidth()) {
-                    Text(
-                        text = stringResource(id = R.string.components_title),
-                        modifier = Modifier.align(Alignment.CenterVertically)
-                    )
-                    Spacer(modifier = Modifier.width(DimenSmall))
-                    Text(
-                        text = "(${components.size})",
-                        modifier = Modifier.align(Alignment.CenterVertically)
-                    )
+            if (components.isNotEmpty()) {
+                item {
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        Text(
+                            text = stringResource(id = R.string.components_title),
+                            modifier = Modifier.align(Alignment.CenterVertically)
+                        )
+                        Spacer(modifier = Modifier.width(DimenSmall))
+                        Text(
+                            text = "(${components.size})",
+                            modifier = Modifier.align(Alignment.CenterVertically)
+                        )
+                    }
                 }
-            }
 
-            item {
-                ComponentsInformation(
-                    components = components,
-                    componentOnClick = componentOnClick
-                )
-                Spacer(modifier = Modifier.height(DimenXxLarge))
+                item {
+                    ComponentsInformation(
+                        components = components,
+                        componentOnClick = componentOnClick
+                    )
+                    Spacer(modifier = Modifier.height(DimenXxLarge))
+                }
             }
 
 //            item { TestItem() }
@@ -243,7 +280,12 @@ private fun StockDetailsContent(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun ExpandedTopBar(headerImages: List<Int>) {
+private fun ExpandedTopBar(
+    headerImages: List<Int>,
+    backOnClick: () -> Unit,
+    editOnClick: (String) -> Unit,
+    moreActionsOnClick: () -> Unit
+) {
 
     val pagerState = rememberPagerState(
         initialPage = 0,
@@ -267,6 +309,9 @@ private fun ExpandedTopBar(headerImages: List<Int>) {
         }
 
         NavBar(
+            backOnClick = backOnClick,
+            editOnClick = editOnClick,
+            moreActionsOnClick = moreActionsOnClick,
             modifier = Modifier.padding(
                 top = DimenExtraLarge,
                 start = DimenMicro,
@@ -279,7 +324,10 @@ private fun ExpandedTopBar(headerImages: List<Int>) {
 @Composable
 private fun CollapsedTopBar(
     modifier: Modifier = Modifier,
-    isCollapsed: Boolean
+    isCollapsed: Boolean,
+    backOnClick: () -> Unit,
+    editOnClick: (String) -> Unit,
+    moreActionsOnClick: () -> Unit
 ) {
     val backgroundColor: Color by animateColorAsState(
         if (isCollapsed) {
@@ -299,6 +347,9 @@ private fun CollapsedTopBar(
             NavBar(
                 contentColor = Color.White,
                 alpha = 0.25f,
+                backOnClick = backOnClick,
+                editOnClick = editOnClick,
+                moreActionsOnClick = moreActionsOnClick,
                 modifier = Modifier.padding(
                     top = DimenTopBarPadding,
                     start = DimenMicro,
@@ -360,7 +411,7 @@ private fun LevelsInformation(
     onHand: Int,
     committed: Int,
     inProduction: Int,
-    available: Int
+    available: Int,
 ) {
     Card(
         colors = CardDefaults.cardColors(containerColor = Color.White),
@@ -457,13 +508,17 @@ private fun NavBar(
     contentColor: Color = Green60,
     alpha: Float = 1f,
     title: String = stringResource(id = R.string.empty_String),
+    backOnClick: () -> Unit,
+    editOnClick: (String) -> Unit,
+    moreActionsOnClick: () -> Unit
 ) {
+    val toastMessage = stringResource(id = R.string.edit_button_toast)
 
     Row(
         modifier = modifier
     ) {
         Button(
-            onClick = { /*TODO*/ },
+            onClick = { backOnClick() },
             colors = ButtonDefaults.buttonColors(containerColor = containerColor.copy(alpha = alpha)),
             contentPadding = PaddingValues(DimenZero),
             modifier = Modifier
@@ -481,15 +536,20 @@ private fun NavBar(
         Spacer(modifier = Modifier.weight(1f))
 
         Button(
-            onClick = { /*TODO*/ },
-            contentPadding = PaddingValues(DimenMicro),
+            onClick = { editOnClick(toastMessage) },
+            contentPadding = PaddingValues(
+                start = DimenSmall,
+                end = DimenSmall,
+                top = DimenMicro,
+                bottom = DimenMicro
+            ),
             colors = ButtonDefaults.buttonColors(containerColor = containerColor.copy(alpha = alpha)),
             modifier = Modifier
                 .height(DimenLarge)
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_edit),
-                contentDescription = stringResource(id = R.string.accessibility_back_button),
+                contentDescription = stringResource(id = R.string.accessibility_edit_button),
                 tint = contentColor
             )
 
@@ -504,15 +564,15 @@ private fun NavBar(
         Spacer(modifier = Modifier.width(DimenMicro))
 
         Button(
-            onClick = { /*TODO*/ },
+            onClick = { moreActionsOnClick() },
             colors = ButtonDefaults.buttonColors(containerColor = containerColor.copy(alpha = alpha)),
             contentPadding = PaddingValues(DimenZero),
             modifier = Modifier
                 .size(DimenLarge)
         ) {
             Icon(
-                painter = painterResource(id = R.drawable.ic_action_more),
-                contentDescription = stringResource(id = R.string.accessibility_back_button),
+                painter = painterResource(id = R.drawable.ic_more_actions),
+                contentDescription = stringResource(id = R.string.accessibility_more_actions_button),
                 tint = contentColor
             )
         }

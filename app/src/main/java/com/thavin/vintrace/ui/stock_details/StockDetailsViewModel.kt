@@ -44,6 +44,9 @@ class StockDetailsViewModel(
             is StockDetailsIntent.ComponentOnClick -> {
                 setState { copy(event = StockDetailsEvent.Navigate(intent.id)) }
             }
+            is StockDetailsIntent.EditOnClick -> {
+                setState { copy(event = StockDetailsEvent.ShowToast(intent.message)) }
+            }
             is StockDetailsIntent.SetIdleEvent -> {
                 setState { copy(event = StockDetailsEvent.Idle) }
             }

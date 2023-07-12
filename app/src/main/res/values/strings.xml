@@ -13,4 +13,9 @@
     <string name="components_title">Components</string>
     <string name="accessibility_header_image">Header image</string>
     <string name="accessibility_back_button">Back button</string>
+    <string name="accessibility_edit_button">Edit button</string>
+    <string name="accessibility_more_actions_button">More actions button</string>
+
+    <!-- Other -->
+    <string name="edit_button_toast">This feature hasn\'t been implemented!</string>
 </resources>
