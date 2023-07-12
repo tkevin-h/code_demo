@@ -28,12 +28,15 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
@@ -67,7 +70,7 @@ fun StockDetailsScreen() {
     ) {
         it.calculateTopPadding()
 
-        with (state.stockDetails) {
+        with(state.stockDetails) {
             StockDetailsContent(
                 images = images,
                 code = code,
@@ -76,7 +79,11 @@ fun StockDetailsScreen() {
                 color = color,
                 beverageDescription = beverageDescription,
                 ownerName = ownerName,
-                unitName = unitName
+                unitName = unitName,
+                onHand = stockLevels.onHand,
+                committed = stockLevels.committed,
+                inProduction = stockLevels.inProduction,
+                available = stockLevels.available
             )
         }
     }
@@ -91,7 +98,11 @@ private fun StockDetailsContent(
     color: String,
     beverageDescription: String,
     ownerName: String,
-    unitName: String
+    unitName: String,
+    onHand: Int,
+    committed: Int,
+    inProduction: Int,
+    available: Int
 ) {
     val lazyListState = rememberLazyListState()
     val overlapHeight = with(LocalDensity.current) {
@@ -106,11 +117,25 @@ private fun StockDetailsContent(
 
     val imageResources = images.map {
         when (it) {
-            ImageTypes.WINE1.endpoint -> { R.drawable.img_wine_flowers }
-            ImageTypes.WINE2.endpoint -> { R.drawable.img_wine_grapes }
-            ImageTypes.WINE3.endpoint -> { R.drawable.img_wine_strawberry }
-            ImageTypes.WINE4.endpoint -> { R.drawable.img_wine_table }
-            else -> { R.drawable.img_generic }
+            ImageTypes.WINE1.endpoint -> {
+                R.drawable.img_wine_flowers
+            }
+
+            ImageTypes.WINE2.endpoint -> {
+                R.drawable.img_wine_grapes
+            }
+
+            ImageTypes.WINE3.endpoint -> {
+                R.drawable.img_wine_strawberry
+            }
+
+            ImageTypes.WINE4.endpoint -> {
+                R.drawable.img_wine_table
+            }
+
+            else -> {
+                R.drawable.img_generic
+            }
         }
     }
 
@@ -121,18 +146,47 @@ private fun StockDetailsContent(
             item { ExpandedTopBar(headerImages = imageResources) }
 
             item {
-                StockHeader(
+                StockInformation(
                     code = code,
                     description = description,
                     secondaryDescription = secondaryDescription,
                     color = color,
                     beverageDescription = beverageDescription,
                     ownerName = ownerName,
-                    unitName = unitName
+                    unitName = unitName,
+                    alpha = if (isCollapsed) {
+                        0f
+                    } else {
+                        1f
+                    }
                 )
                 Spacer(modifier = Modifier.height(DimenSmall))
             }
-//
+
+            item {
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        text = stringResource(id = R.string.levels_title),
+                        modifier = Modifier.align(Alignment.CenterVertically)
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
+                    TextButton(onClick = { /*TODO*/ }) {
+                        Text(text = stringResource(id = R.string.edit_button))
+                    }
+                }
+            }
+
+            item {
+                LevelsInformation(
+                    onHand = onHand,
+                    committed = committed,
+                    inProduction = inProduction,
+                    available = available
+                )
+
+                Spacer(modifier = Modifier.height(DimenSmall))
+            }
+
 //            item { TestItem() }
 //            item { TestItem() }
 //            item { TestItem() }
@@ -214,7 +268,7 @@ private fun CollapsedTopBar(
 }
 
 @Composable
-private fun StockHeader(
+private fun StockInformation(
     modifier: Modifier = Modifier,
     code: String,
     description: String,
@@ -222,7 +276,8 @@ private fun StockHeader(
     color: String,
     beverageDescription: String,
     ownerName: String,
-    unitName: String
+    unitName: String,
+    alpha: Float = 1f
 ) {
     Card(
         colors = CardDefaults.cardColors(containerColor = Color.White),
@@ -235,6 +290,7 @@ private fun StockHeader(
         elevation = CardDefaults.cardElevation(DimenNano),
         modifier = modifier
             .fillMaxWidth()
+            .alpha(alpha)
     ) {
         Column(
             modifier = Modifier.padding(
@@ -252,6 +308,51 @@ private fun StockHeader(
             Text(text = beverageDescription)
             Text(text = ownerName)
             Text(text = unitName)
+        }
+    }
+}
+
+@Composable
+private fun LevelsInformation(
+    modifier: Modifier = Modifier,
+    onHand: Int,
+    committed: Int,
+    inProduction: Int,
+    available: Int
+) {
+    Card(
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        shape = RoundedCornerShape(DimenSmall),
+        elevation = CardDefaults.cardElevation(DimenNano),
+        modifier = modifier
+            .fillMaxWidth()
+    ) {
+        Column(
+            modifier = Modifier.padding(DimenSmall)
+        ) {
+            Row {
+                Text(text = stringResource(id = R.string.levels_on_hand_title))
+                Spacer(modifier = Modifier.weight(1f))
+                Text(text = onHand.toString())
+            }
+
+            Row {
+                Text(text = stringResource(id = R.string.levels_committed_title))
+                Spacer(modifier = Modifier.weight(1f))
+                Text(text = committed.toString())
+            }
+
+            Row {
+                Text(text = stringResource(id = R.string.levels_in_production_title))
+                Spacer(modifier = Modifier.weight(1f))
+                Text(text = inProduction.toString())
+            }
+
+            Row {
+                Text(text = stringResource(id = R.string.levels_available_title))
+                Spacer(modifier = Modifier.weight(1f))
+                Text(text = available.toString())
+            }
         }
     }
 }
