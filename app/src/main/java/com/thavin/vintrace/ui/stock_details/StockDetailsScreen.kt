@@ -5,6 +5,7 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -45,6 +46,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.zIndex
 import com.thavin.vintrace.R
+import com.thavin.vintrace.domain.stock_details.model.StockComponents
+import com.thavin.vintrace.ui.stock_details.contract.StockDetailsEvent
+import com.thavin.vintrace.ui.stock_details.contract.StockDetailsIntent
 import com.thavin.vintrace.ui.theme.DimenCollapsedTopBarHeight
 import com.thavin.vintrace.ui.theme.DimenExpandedTopBarHeight
 import com.thavin.vintrace.ui.theme.DimenExtraLarge
@@ -60,14 +64,25 @@ import com.thavin.vintrace.ui.theme.Green60
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun StockDetailsScreen() {
+fun StockDetailsScreen(
+    componentOnClick: (String) -> Unit,
+    onBack: () -> Unit
+) {
     val stockDetailsViewModel = koinViewModel<StockDetailsViewModel>()
-    val state by stockDetailsViewModel.state
+    val state = stockDetailsViewModel.state
         .collectAsState()
+        .value
 
-    Scaffold(
+    when (state.event) {
+        is StockDetailsEvent.Navigate -> {
+            stockDetailsViewModel.processIntent(StockDetailsIntent.SetIdleEvent)
+            componentOnClick(state.event.id)
+        }
 
-    ) {
+        else -> {}
+    }
+
+    Scaffold {
         it.calculateTopPadding()
 
         with(state.stockDetails) {
@@ -83,7 +98,11 @@ fun StockDetailsScreen() {
                 onHand = stockLevels.onHand,
                 committed = stockLevels.committed,
                 inProduction = stockLevels.inProduction,
-                available = stockLevels.available
+                available = stockLevels.available,
+                components = stockComponents,
+                componentOnClick = { id ->
+                    stockDetailsViewModel.processIntent(StockDetailsIntent.ComponentOnClick(id))
+                }
             )
         }
     }
@@ -102,7 +121,9 @@ private fun StockDetailsContent(
     onHand: Int,
     committed: Int,
     inProduction: Int,
-    available: Int
+    available: Int,
+    components: List<StockComponents>,
+    componentOnClick: (String) -> Unit
 ) {
     val lazyListState = rememberLazyListState()
     val overlapHeight = with(LocalDensity.current) {
@@ -146,24 +167,23 @@ private fun StockDetailsContent(
             item { ExpandedTopBar(headerImages = imageResources) }
 
             item {
-                StockInformation(
-                    code = code,
-                    description = description,
-                    secondaryDescription = secondaryDescription,
-                    color = color,
-                    beverageDescription = beverageDescription,
-                    ownerName = ownerName,
-                    unitName = unitName,
-                    alpha = if (isCollapsed) {
-                        0f
-                    } else {
-                        1f
-                    }
-                )
+                AnimatedVisibility(visible = !isCollapsed) {
+                    StockInformation(
+                        code = code,
+                        description = description,
+                        secondaryDescription = secondaryDescription,
+                        color = color,
+                        beverageDescription = beverageDescription,
+                        ownerName = ownerName,
+                        unitName = unitName
+                    )
+                }
                 Spacer(modifier = Modifier.height(DimenSmall))
             }
 
             item {
+                Spacer(modifier = Modifier.height(DimenLarge))
+
                 Row(modifier = Modifier.fillMaxWidth()) {
                     Text(
                         text = stringResource(id = R.string.levels_title),
@@ -185,6 +205,28 @@ private fun StockDetailsContent(
                 )
 
                 Spacer(modifier = Modifier.height(DimenSmall))
+            }
+
+            item {
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        text = stringResource(id = R.string.components_title),
+                        modifier = Modifier.align(Alignment.CenterVertically)
+                    )
+                    Spacer(modifier = Modifier.width(DimenSmall))
+                    Text(
+                        text = "(${components.size})",
+                        modifier = Modifier.align(Alignment.CenterVertically)
+                    )
+                }
+            }
+
+            item {
+                ComponentsInformation(
+                    components = components,
+                    componentOnClick = componentOnClick
+                )
+                Spacer(modifier = Modifier.height(DimenXxLarge))
             }
 
 //            item { TestItem() }
@@ -352,6 +394,40 @@ private fun LevelsInformation(
                 Text(text = stringResource(id = R.string.levels_available_title))
                 Spacer(modifier = Modifier.weight(1f))
                 Text(text = available.toString())
+            }
+        }
+    }
+}
+
+@Composable
+private fun ComponentsInformation(
+    modifier: Modifier = Modifier,
+    components: List<StockComponents>,
+    componentOnClick: (String) -> Unit
+) {
+    Card(
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        shape = RoundedCornerShape(DimenSmall),
+        elevation = CardDefaults.cardElevation(DimenNano),
+        modifier = modifier
+            .fillMaxWidth()
+    ) {
+        Column(
+            modifier = Modifier.padding(DimenSmall)
+        ) {
+            for (item in components) {
+                Row(
+                    modifier = Modifier.clickable {
+                        componentOnClick(item.id)
+                    }
+                ) {
+                    Column {
+                        Text(text = item.code)
+                        Text(text = item.description)
+                    }
+                    Spacer(modifier = Modifier.weight(1f))
+                    Text(text = item.quantity)
+                }
             }
         }
     }

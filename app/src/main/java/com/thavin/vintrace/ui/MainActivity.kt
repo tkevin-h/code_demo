@@ -6,7 +6,6 @@ import androidx.activity.compose.setContent
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
 import androidx.core.view.WindowCompat
-import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.thavin.vintrace.ui.navigation.MainNavHost
 import com.thavin.vintrace.ui.theme.VintraceTheme
@@ -24,7 +23,7 @@ class MainActivity : ComponentActivity() {
                     systemUiController.setStatusBarColor(Color.Transparent)
                 }
 
-                MainNavHost(navHostController = rememberNavController())
+                MainNavHost()
             }
         }
     }

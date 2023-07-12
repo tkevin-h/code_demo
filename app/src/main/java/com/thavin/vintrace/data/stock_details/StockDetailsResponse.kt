@@ -35,6 +35,7 @@ data class Quantity(
 
 @Serializable
 data class Components(
+    val endpoint: String,
     val code: String,
     val description: String,
     val unit: Unit,

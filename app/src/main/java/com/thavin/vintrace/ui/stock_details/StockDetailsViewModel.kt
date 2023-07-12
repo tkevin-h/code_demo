@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.thavin.vintrace.domain.stock_details.model.StockDetails
 import com.thavin.vintrace.domain.stock_details.StockDetailsRepository
+import com.thavin.vintrace.ui.stock_details.contract.StockDetailsEvent
 import com.thavin.vintrace.ui.stock_details.contract.StockDetailsIntent
 import com.thavin.vintrace.ui.stock_details.contract.StockDetailsState
 import com.thavin.vintrace.util.ResourceResult
@@ -39,6 +40,12 @@ class StockDetailsViewModel(
                             processResult(it)
                         }
                 }
+            }
+            is StockDetailsIntent.ComponentOnClick -> {
+                setState { copy(event = StockDetailsEvent.Navigate(intent.id)) }
+            }
+            is StockDetailsIntent.SetIdleEvent -> {
+                setState { copy(event = StockDetailsEvent.Idle) }
             }
         }
     }

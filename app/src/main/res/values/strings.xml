@@ -10,6 +10,7 @@
     <string name="levels_committed_title">Committed</string>
     <string name="levels_in_production_title">In production</string>
     <string name="levels_available_title">Available</string>
+    <string name="components_title">Components</string>
     <string name="accessibility_header_image">Header image</string>
     <string name="accessibility_back_button">Back button</string>
 </resources>

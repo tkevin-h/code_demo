@@ -5,21 +5,25 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.thavin.vintrace.ui.stock.StockScreen
 import com.thavin.vintrace.ui.stock_details.StockDetailsScreen
 
 @Composable
 fun MainNavHost(
-    navHostController: NavHostController
+    navController: NavHostController = rememberNavController()
 ) {
 
-    NavHost(navController = navHostController, startDestination = Routes.STOCK.route) {
+    NavHost(
+        navController = navController,
+        startDestination = Routes.STOCK.route
+    ) {
 
         composable(route = Routes.STOCK.route) {
             StockScreen(
                 stockOnClick = { route, stockId ->
-                    navHostController.navigate("$route/$stockId")
+                    navController.navigate("$route/$stockId")
                 }
             )
         }
@@ -28,7 +32,12 @@ fun MainNavHost(
             route = Routes.STOCK_DETAILS.route + "/{stockId}",
             arguments = listOf(navArgument("stockId") { type = NavType.StringType })
         ) {
-            StockDetailsScreen()
+            StockDetailsScreen(
+                componentOnClick = {
+                    navController.navigate(Routes.STOCK_DETAILS.route + "/$it")
+                },
+                onBack = { navController.popBackStack() }
+            )
         }
     }
 }
