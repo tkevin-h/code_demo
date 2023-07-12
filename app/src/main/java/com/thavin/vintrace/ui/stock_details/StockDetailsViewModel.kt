@@ -3,7 +3,7 @@ package com.thavin.vintrace.ui.stock_details
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.thavin.vintrace.domain.stock_details.StockDetails
+import com.thavin.vintrace.domain.stock_details.model.StockDetails
 import com.thavin.vintrace.domain.stock_details.StockDetailsRepository
 import com.thavin.vintrace.ui.stock_details.contract.StockDetailsIntent
 import com.thavin.vintrace.ui.stock_details.contract.StockDetailsState
@@ -51,7 +51,7 @@ class StockDetailsViewModel(
 
             is ResourceResult.Success -> {
                 result.data?.let {
-                    setState { copy(code = it.code) }
+                    setState { copy(stockDetails = it) }
                 }
             }
 

@@ -46,6 +46,7 @@ import com.thavin.vintrace.ui.theme.DimenCollapsedTopBarHeight
 import com.thavin.vintrace.ui.theme.DimenExpandedTopBarHeight
 import com.thavin.vintrace.ui.theme.DimenExtraLarge
 import com.thavin.vintrace.ui.theme.DimenLarge
+import com.thavin.vintrace.ui.theme.DimenMedium
 import com.thavin.vintrace.ui.theme.DimenMicro
 import com.thavin.vintrace.ui.theme.DimenNano
 import com.thavin.vintrace.ui.theme.DimenSmall
@@ -54,7 +55,6 @@ import com.thavin.vintrace.ui.theme.DimenXxLarge
 import com.thavin.vintrace.ui.theme.DimenZero
 import com.thavin.vintrace.ui.theme.Green60
 import org.koin.androidx.compose.koinViewModel
-
 
 @Composable
 fun StockDetailsScreen() {
@@ -67,13 +67,31 @@ fun StockDetailsScreen() {
     ) {
         it.calculateTopPadding()
 
-        StockDetailsContent(state.headerImages)
+        with (state.stockDetails) {
+            StockDetailsContent(
+                images = images,
+                code = code,
+                description = description,
+                secondaryDescription = secondaryDescription,
+                color = color,
+                beverageDescription = beverageDescription,
+                ownerName = ownerName,
+                unitName = unitName
+            )
+        }
     }
 }
 
 @Composable
 private fun StockDetailsContent(
-    headerImages: List<Int>
+    images: List<String>,
+    code: String,
+    description: String,
+    secondaryDescription: String,
+    color: String,
+    beverageDescription: String,
+    ownerName: String,
+    unitName: String
 ) {
     val lazyListState = rememberLazyListState()
     val overlapHeight = with(LocalDensity.current) {
@@ -86,13 +104,32 @@ private fun StockDetailsContent(
         }
     }
 
+    val imageResources = images.map {
+        when (it) {
+            ImageTypes.WINE1.endpoint -> { R.drawable.img_wine_flowers }
+            ImageTypes.WINE2.endpoint -> { R.drawable.img_wine_grapes }
+            ImageTypes.WINE3.endpoint -> { R.drawable.img_wine_strawberry }
+            ImageTypes.WINE4.endpoint -> { R.drawable.img_wine_table }
+            else -> { R.drawable.img_generic }
+        }
+    }
+
     Box {
         CollapsedTopBar(modifier = Modifier.zIndex(2f), isCollapsed = isCollapsed)
 
         LazyColumn(state = lazyListState) {
-            item { ExpandedTopBar(headerImages = headerImages) }
+            item { ExpandedTopBar(headerImages = imageResources) }
+
             item {
-                StockDetails()
+                StockHeader(
+                    code = code,
+                    description = description,
+                    secondaryDescription = secondaryDescription,
+                    color = color,
+                    beverageDescription = beverageDescription,
+                    ownerName = ownerName,
+                    unitName = unitName
+                )
                 Spacer(modifier = Modifier.height(DimenSmall))
             }
 //
@@ -177,8 +214,15 @@ private fun CollapsedTopBar(
 }
 
 @Composable
-private fun StockDetails(
-    modifier: Modifier = Modifier
+private fun StockHeader(
+    modifier: Modifier = Modifier,
+    code: String,
+    description: String,
+    secondaryDescription: String,
+    color: String,
+    beverageDescription: String,
+    ownerName: String,
+    unitName: String
 ) {
     Card(
         colors = CardDefaults.cardColors(containerColor = Color.White),
@@ -192,13 +236,22 @@ private fun StockDetails(
         modifier = modifier
             .fillMaxWidth()
     ) {
-        Column {
-            Text(text = "code")
-            Text(text = "code")
-            Text(text = "code")
-            Text(text = "code")
-            Text(text = "code")
-            Text(text = "code")
+        Column(
+            modifier = Modifier.padding(
+                top = DimenSmall,
+                start = DimenMedium,
+                end = DimenMedium,
+                bottom = DimenMedium
+            )
+        ) {
+
+            Text(text = code)
+            Text(text = description)
+            Text(text = secondaryDescription)
+            Text(text = color)
+            Text(text = beverageDescription)
+            Text(text = ownerName)
+            Text(text = unitName)
         }
     }
 }

@@ -1,13 +1,7 @@
 package com.thavin.vintrace.ui.stock_details.contract
 
-import com.thavin.vintrace.R
+import com.thavin.vintrace.domain.stock_details.model.StockDetails
 
 data class StockDetailsState(
-    val code: String = "",
-    val headerImages: List<Int> = listOf(
-        R.drawable.img_wine_strawberry,
-        R.drawable.img_wine_flowers,
-        R.drawable.img_wine_grapes,
-        R.drawable.img_generic
-    )
+    val stockDetails: StockDetails = StockDetails()
 )

@@ -1,6 +1,6 @@
 package com.thavin.vintrace.data.stock_details
 
-import com.thavin.vintrace.domain.stock_details.StockDetails
+import com.thavin.vintrace.domain.stock_details.model.StockDetails
 import com.thavin.vintrace.domain.stock_details.StockDetailsRepository
 import com.thavin.vintrace.util.ResourceResult
 import kotlinx.coroutines.Dispatchers
