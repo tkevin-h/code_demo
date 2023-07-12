@@ -2,6 +2,7 @@ package com.thavin.vintrace.ui.stock_details
 
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,12 +11,14 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -30,9 +33,11 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.zIndex
+import androidx.core.graphics.toColorInt
 import com.thavin.vintrace.R
 import com.thavin.vintrace.domain.stock_details.model.StockComponents
 import com.thavin.vintrace.ui.stock_details.components.CollapsedTopBar
@@ -44,10 +49,13 @@ import com.thavin.vintrace.ui.theme.DimenCollapsedTopBarHeight
 import com.thavin.vintrace.ui.theme.DimenExpandedTopBarHeight
 import com.thavin.vintrace.ui.theme.DimenLarge
 import com.thavin.vintrace.ui.theme.DimenMedium
+import com.thavin.vintrace.ui.theme.DimenMicro
 import com.thavin.vintrace.ui.theme.DimenNano
 import com.thavin.vintrace.ui.theme.DimenSmall
 import com.thavin.vintrace.ui.theme.DimenXxLarge
 import com.thavin.vintrace.ui.theme.DimenZero
+import com.thavin.vintrace.ui.theme.Green60
+import com.thavin.vintrace.ui.theme.Typography
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -89,7 +97,7 @@ fun StockDetailsScreen(
                 code = code,
                 description = description,
                 secondaryDescription = secondaryDescription,
-                color = color,
+                beverageColor = color,
                 beverageDescription = beverageDescription,
                 ownerName = ownerName,
                 unitName = unitName,
@@ -119,7 +127,7 @@ private fun StockDetailsContent(
     code: String,
     description: String,
     secondaryDescription: String,
-    color: String,
+    beverageColor: String,
     beverageDescription: String,
     ownerName: String,
     unitName: String,
@@ -165,17 +173,19 @@ private fun StockDetailsContent(
                 )
             }
 
-            item {
-                AnimatedVisibility(visible = !isCollapsed) {
-                    StockInformation(
-                        code = code,
-                        description = description,
-                        secondaryDescription = secondaryDescription,
-                        color = color,
-                        beverageDescription = beverageDescription,
-                        ownerName = ownerName,
-                        unitName = unitName
-                    )
+            if (code.isNotBlank()) {
+                item {
+                    AnimatedVisibility(visible = !isCollapsed) {
+                        StockInformation(
+                            code = code,
+                            description = description,
+                            secondaryDescription = secondaryDescription,
+                            beverageColor = beverageColor,
+                            beverageDescription = beverageDescription,
+                            ownerName = ownerName,
+                            unitName = unitName
+                        )
+                    }
                 }
             }
 
@@ -249,7 +259,7 @@ private fun StockInformation(
     code: String,
     description: String,
     secondaryDescription: String,
-    color: String,
+    beverageColor: String,
     beverageDescription: String,
     ownerName: String,
     unitName: String,
@@ -277,13 +287,77 @@ private fun StockInformation(
             )
         ) {
 
-            Text(text = code)
-            Text(text = description)
-            Text(text = secondaryDescription)
-            Text(text = color)
-            Text(text = beverageDescription)
-            Text(text = ownerName)
-            Text(text = unitName)
+            Text(
+                text = code,
+                style = Typography.titleLarge
+            )
+
+            Spacer(modifier = Modifier.height(DimenNano))
+
+            Text(
+                text = description,
+                style = Typography.bodyMedium
+            )
+
+            Spacer(modifier = Modifier.height(DimenNano))
+
+            Text(
+                text = secondaryDescription,
+                style = Typography.labelMedium
+            )
+
+            Row(
+                modifier = Modifier
+                    .padding(top = DimenSmall, bottom = DimenSmall)
+            ) {
+                if (beverageColor.isNotBlank()) {
+                    Canvas(
+                        onDraw = {
+                            drawCircle(color = Color(beverageColor.toColorInt()))
+                        },
+                        modifier = Modifier
+                            .size(DimenSmall)
+                            .align(Alignment.CenterVertically)
+                    )
+                }
+
+                Spacer(modifier = Modifier.width(DimenMicro))
+
+                Text(
+                    text = beverageDescription,
+                    style = Typography.bodySmall
+                )
+            }
+
+            Row {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_user),
+                    contentDescription = stringResource(id = R.string.accessibility_owner_icon),
+                    tint = Green60
+                )
+
+                Spacer(modifier = Modifier.width(DimenMicro))
+
+                Text(
+                    text = ownerName,
+                    style = Typography.bodySmall
+                ) 
+            }
+
+            Spacer(modifier = Modifier.height(DimenNano))
+
+            Row {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_measuring_cup),
+                    contentDescription = stringResource(id = R.string.accessibility_measuring_cup_icon),
+                    tint = Green60
+                )
+                Spacer(modifier = Modifier.width(DimenMicro))
+                Text(
+                    text = unitName,
+                    style = Typography.bodySmall
+                )
+            }
         }
     }
 }

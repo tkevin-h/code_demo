@@ -15,6 +15,8 @@
     <string name="accessibility_back_button">Back button</string>
     <string name="accessibility_edit_button">Edit button</string>
     <string name="accessibility_more_actions_button">More actions button</string>
+    <string name="accessibility_owner_icon">Owner icon</string>
+    <string name="accessibility_measuring_cup_icon">Measuring cup icon</string>
 
     <!-- Other -->
     <string name="edit_button_toast">This feature hasn\'t been implemented!</string>
