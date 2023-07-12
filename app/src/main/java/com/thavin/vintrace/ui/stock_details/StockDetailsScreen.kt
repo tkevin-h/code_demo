@@ -36,7 +36,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.zIndex
 import androidx.core.graphics.toColorInt
 import com.thavin.vintrace.R
@@ -51,15 +50,18 @@ import com.thavin.vintrace.ui.theme.Cyan59
 import com.thavin.vintrace.ui.theme.DimenCollapsedTopBarHeight
 import com.thavin.vintrace.ui.theme.DimenExpandedTopBarHeight
 import com.thavin.vintrace.ui.theme.DimenLarge
+import com.thavin.vintrace.ui.theme.DimenListBottomSpacer
 import com.thavin.vintrace.ui.theme.DimenMedium
 import com.thavin.vintrace.ui.theme.DimenMicro
 import com.thavin.vintrace.ui.theme.DimenNano
 import com.thavin.vintrace.ui.theme.DimenSmall
-import com.thavin.vintrace.ui.theme.DimenXxLarge
 import com.thavin.vintrace.ui.theme.DimenZero
 import com.thavin.vintrace.ui.theme.Green60
 import com.thavin.vintrace.ui.theme.Grey21
+import com.thavin.vintrace.ui.theme.Grey31
 import com.thavin.vintrace.ui.theme.Grey56
+import com.thavin.vintrace.ui.theme.Grey63
+import com.thavin.vintrace.ui.theme.Grey76
 import com.thavin.vintrace.ui.theme.Grey88
 import com.thavin.vintrace.ui.theme.Typography
 import org.koin.androidx.compose.koinViewModel
@@ -203,40 +205,22 @@ private fun StockDetailsContent(
                     available = available,
                     editOnClick = editOnClick
                 )
+
+                Spacer(modifier = Modifier.height(DimenSmall))
             }
 
             if (components.isNotEmpty()) {
                 item {
-                    Row(modifier = Modifier.fillMaxWidth()) {
-                        Text(
-                            text = stringResource(id = R.string.components_title),
-                            modifier = Modifier.align(Alignment.CenterVertically)
-                        )
-                        Spacer(modifier = Modifier.width(DimenSmall))
-                        Text(
-                            text = "(${components.size})",
-                            modifier = Modifier.align(Alignment.CenterVertically)
-                        )
-                    }
-                }
+                    Spacer(modifier = Modifier.height(DimenLarge))
 
-                item {
                     ComponentsInformation(
                         components = components,
                         componentOnClick = componentOnClick
                     )
-                    Spacer(modifier = Modifier.height(DimenXxLarge))
+
+                    Spacer(modifier = Modifier.height(DimenListBottomSpacer))
                 }
             }
-
-//            item { TestItem() }
-//            item { TestItem() }
-//            item { TestItem() }
-//            item { TestItem() }
-//            item { TestItem() }
-//            item { TestItem() }
-//            item { TestItem() }
-//            item { TestItem() }
         }
     }
 }
@@ -361,136 +345,138 @@ private fun LevelsInformation(
 ) {
     val editToastMessage = stringResource(id = R.string.edit_button_toast)
 
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = DimenMedium, end = DimenMedium)
-    ) {
-        Text(
-            text = stringResource(id = R.string.levels_title),
-            style = Typography.titleMedium,
+    Column(modifier = modifier) {
+        Row(
             modifier = Modifier
-                .align(Alignment.CenterVertically)
-        )
-
-        Spacer(modifier = Modifier.weight(1f))
-
-        TextButton(
-            onClick = { editOnClick(editToastMessage) }
+                .fillMaxWidth()
+                .padding(start = DimenMedium, end = DimenMedium)
         ) {
-            Text(text = stringResource(id = R.string.edit_button))
+            Text(
+                text = stringResource(id = R.string.levels_title),
+                style = Typography.titleMedium,
+                modifier = Modifier
+                    .align(Alignment.CenterVertically)
+            )
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            TextButton(
+                onClick = { editOnClick(editToastMessage) }
+            ) {
+                Text(text = stringResource(id = R.string.edit_button))
+            }
         }
-    }
 
-    Card(
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        shape = RoundedCornerShape(DimenMicro),
-        elevation = CardDefaults.cardElevation(DimenNano),
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(start = DimenMicro, end = DimenMicro)
-    ) {
-        Column(
+        Card(
+            colors = CardDefaults.cardColors(containerColor = Color.White),
+            shape = RoundedCornerShape(DimenMicro),
+            elevation = CardDefaults.cardElevation(DimenNano),
             modifier = Modifier
-                .padding(DimenSmall)
+                .fillMaxWidth()
+                .padding(start = DimenMicro, end = DimenMicro)
         ) {
-            Row {
-                Text(
-                    text = stringResource(id = R.string.levels_on_hand_title),
-                    style = Typography.bodyMedium,
-                    color = Grey56
-                )
-
-                Spacer(modifier = Modifier.weight(1f))
-
-                Text(
-                    text = onHand.numberFormat(),
-                    style = Typography.bodyMedium,
-                    color = Grey21
-                )
-            }
-
-            Spacer(modifier = Modifier.height(DimenSmall))
-
-            Divider(
-                color = Grey88,
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = DimenMicro, end = DimenMicro)
-            )
+                    .padding(DimenSmall)
+            ) {
+                Row {
+                    Text(
+                        text = stringResource(id = R.string.levels_on_hand_title),
+                        style = Typography.bodyMedium,
+                        color = Grey56
+                    )
 
-            Spacer(modifier = Modifier.height(DimenSmall))
+                    Spacer(modifier = Modifier.weight(1f))
 
-            Row {
-                Text(
-                    text = stringResource(id = R.string.levels_committed_title),
-                    style = Typography.bodyMedium,
-                    color = Grey56
+                    Text(
+                        text = onHand.numberFormat(),
+                        style = Typography.bodyMedium,
+                        color = Grey21
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(DimenSmall))
+
+                Divider(
+                    color = Grey88,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = DimenMicro, end = DimenMicro)
                 )
 
-                Spacer(modifier = Modifier.weight(1f))
+                Spacer(modifier = Modifier.height(DimenSmall))
 
-                Text(
-                    text = committed.numberFormat(),
-                    style = Typography.bodyMedium,
-                    color = Grey21
-                )
-            }
+                Row {
+                    Text(
+                        text = stringResource(id = R.string.levels_committed_title),
+                        style = Typography.bodyMedium,
+                        color = Grey56
+                    )
 
-            Spacer(modifier = Modifier.height(DimenSmall))
+                    Spacer(modifier = Modifier.weight(1f))
 
-            Divider(
-                color = Grey88,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = DimenMicro, end = DimenMicro)
-            )
+                    Text(
+                        text = committed.numberFormat(),
+                        style = Typography.bodyMedium,
+                        color = Grey21
+                    )
+                }
 
-            Spacer(modifier = Modifier.height(DimenSmall))
+                Spacer(modifier = Modifier.height(DimenSmall))
 
-            Row {
-                Text(
-                    text = stringResource(id = R.string.levels_in_production_title),
-                    style = Typography.bodyMedium,
-                    color = Grey56
-                )
-
-                Spacer(modifier = Modifier.weight(1f))
-
-                Text(
-                    text = inProduction.numberFormat(),
-                    style = Typography.bodyMedium,
-                    color = Grey21
+                Divider(
+                    color = Grey88,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = DimenMicro, end = DimenMicro)
                 )
 
-            }
+                Spacer(modifier = Modifier.height(DimenSmall))
 
-            Spacer(modifier = Modifier.height(DimenSmall))
+                Row {
+                    Text(
+                        text = stringResource(id = R.string.levels_in_production_title),
+                        style = Typography.bodyMedium,
+                        color = Grey56
+                    )
 
-            Divider(
-                color = Grey88,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = DimenMicro, end = DimenMicro)
-            )
+                    Spacer(modifier = Modifier.weight(1f))
 
-            Spacer(modifier = Modifier.height(DimenSmall))
+                    Text(
+                        text = inProduction.numberFormat(),
+                        style = Typography.bodyMedium,
+                        color = Grey21
+                    )
 
-            Row {
-                Text(
-                    text = stringResource(id = R.string.levels_available_title),
-                    style = Typography.bodyMedium,
-                    color = Grey56
+                }
+
+                Spacer(modifier = Modifier.height(DimenSmall))
+
+                Divider(
+                    color = Grey88,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = DimenMicro, end = DimenMicro)
                 )
 
-                Spacer(modifier = Modifier.weight(1f))
+                Spacer(modifier = Modifier.height(DimenSmall))
 
-                Text(
-                    text = available.numberFormat(),
-                    style = Typography.bodyMedium,
-                    color = Cyan59
-                )
+                Row {
+                    Text(
+                        text = stringResource(id = R.string.levels_available_title),
+                        style = Typography.bodyMedium,
+                        color = Grey56
+                    )
 
+                    Spacer(modifier = Modifier.weight(1f))
+
+                    Text(
+                        text = available.numberFormat(),
+                        style = Typography.bodyMedium,
+                        color = Cyan59
+                    )
+
+                }
             }
         }
     }
@@ -502,47 +488,99 @@ private fun ComponentsInformation(
     components: List<StockComponents>,
     componentOnClick: (String) -> Unit
 ) {
-    Card(
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        shape = RoundedCornerShape(DimenSmall),
-        elevation = CardDefaults.cardElevation(DimenNano),
+
+    Column(
         modifier = modifier
-            .fillMaxWidth()
     ) {
-        Column(
-            modifier = Modifier.padding(DimenSmall)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = DimenMedium, end = DimenMedium)
         ) {
-            for (item in components) {
-                Row(
-                    modifier = Modifier.clickable {
-                        componentOnClick(item.id)
+            Text(
+                text = stringResource(id = R.string.components_title),
+                style = Typography.titleMedium,
+                modifier = Modifier.align(Alignment.CenterVertically)
+            )
+
+            Spacer(modifier = Modifier.width(DimenNano))
+
+            Text(
+                text = "(${components.size})",
+                style = Typography.labelLarge,
+                color = Grey63,
+                modifier = Modifier.align(Alignment.CenterVertically)
+            )
+        }
+
+        Spacer(modifier = Modifier.height(DimenSmall))
+
+        Card(
+            colors = CardDefaults.cardColors(containerColor = Color.White),
+            shape = RoundedCornerShape(DimenMicro),
+            elevation = CardDefaults.cardElevation(DimenNano),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = DimenMicro, end = DimenMicro)
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(DimenSmall)
+            ) {
+                components.forEachIndexed { index, stockComponents ->
+                    Row(
+                        modifier = Modifier
+                            .clickable {
+                                componentOnClick(stockComponents.id)
+                            }
+                    ) {
+                        Column {
+                            Text(
+                                text = stockComponents.code,
+                                style = Typography.bodyMedium,
+                                color = Green60
+                            )
+
+                            Spacer(modifier = Modifier.height(DimenNano))
+
+                            Text(
+                                text = stockComponents.description,
+                                style = Typography.bodySmall,
+                                color = Grey56
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.weight(1f))
+
+                        Text(
+                            text = stockComponents.quantity,
+                            style = Typography.bodyMedium,
+                            color = Grey31
+                        )
+
+                        Spacer(modifier = Modifier.width(DimenMicro))
+
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_chevron_forward),
+                            contentDescription = stringResource(id = R.string.accessibility_icon_forward),
+                            tint = Grey76
+                        )
                     }
-                ) {
-                    Column {
-                        Text(text = item.code)
-                        Text(text = item.description)
+
+                    if (index < components.size - 1) {
+                        Spacer(modifier = Modifier.height(DimenSmall))
+
+                        Divider(
+                            color = Grey88,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(start = DimenMicro, end = DimenMicro)
+                        )
+
+                        Spacer(modifier = Modifier.height(DimenSmall))
                     }
-                    Spacer(modifier = Modifier.weight(1f))
-                    Text(text = item.quantity)
                 }
             }
         }
-    }
-}
-
-@Composable
-private fun TestItem(
-) {
-    Card(
-        elevation = CardDefaults.cardElevation(DimenNano),
-        shape = RoundedCornerShape(DimenNano),
-    ) {
-        Text(
-            text = "testItem",
-            textAlign = TextAlign.Center,
-            modifier = Modifier
-                .padding(DimenXxLarge)
-                .fillMaxWidth()
-        )
     }
 }
