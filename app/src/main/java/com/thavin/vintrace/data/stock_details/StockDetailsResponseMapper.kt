@@ -20,8 +20,8 @@ fun StockDetailsResponse.toStockDetails() =
         code = this.code,
         description = this.description,
         secondaryDescription = this.secondaryDescription,
-        color = COLOR_PREFIX + this.beverageProperties.colour,
-        beverageDescription = this.beverageProperties.description,
+        color = this.beverageProperties?.let { COLOR_PREFIX + it.colour },
+        beverageDescription = this.beverageProperties?.description,
         ownerName = this.owner.name,
         unitName = this.unit.name,
         stockLevels = this.quantity.toStockLevels(),
@@ -63,11 +63,26 @@ private fun mapComponentQuantity(quantity: String, showUnit: Boolean, abbreviati
 
 private fun mapEndpoint(endpoint: String) =
     when (endpoint) {
-        StockEndpoints.ITEM1.endpoint -> { STOCK_ITEM_1 }
-        StockEndpoints.ITEM2.endpoint -> { STOCK_ITEM_2 }
-        StockEndpoints.ITEM3.endpoint -> { STOCK_ITEM_3 }
-        StockEndpoints.ITEM4.endpoint -> { STOCK_ITEM_4 }
-        StockEndpoints.ITEM5.endpoint -> { STOCK_ITEM_5 }
+        StockEndpoints.ITEM1.endpoint -> {
+            STOCK_ITEM_1
+        }
+
+        StockEndpoints.ITEM2.endpoint -> {
+            STOCK_ITEM_2
+        }
+
+        StockEndpoints.ITEM3.endpoint -> {
+            STOCK_ITEM_3
+        }
+
+        StockEndpoints.ITEM4.endpoint -> {
+            STOCK_ITEM_4
+        }
+
+        StockEndpoints.ITEM5.endpoint -> {
+            STOCK_ITEM_5
+        }
+
         else -> EMPTY
     }
 

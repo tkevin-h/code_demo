@@ -15,4 +15,4 @@ val DimenExtraLarge = 48.dp
 val DimenExpandedTopBarHeight = 320.dp
 val DimenCollapsedTopBarHeight = 82.dp
 val DimenTopBarPadding = 36.dp
-val DimenListBottomSpacer = 300.dp
+val DimenListBottomSpacer = 200.dp

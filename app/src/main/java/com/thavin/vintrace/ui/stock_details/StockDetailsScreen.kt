@@ -1,7 +1,6 @@
 package com.thavin.vintrace.ui.stock_details
 
 import android.widget.Toast
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -134,9 +133,9 @@ private fun StockDetailsContent(
     images: List<Int>,
     code: String,
     description: String,
-    secondaryDescription: String,
-    beverageColor: String,
-    beverageDescription: String,
+    secondaryDescription: String?,
+    beverageColor: String?,
+    beverageDescription: String?,
     ownerName: String,
     unitName: String,
     onHand: Int,
@@ -162,11 +161,12 @@ private fun StockDetailsContent(
 
     Box {
         CollapsedTopBar(
-            modifier = Modifier.zIndex(2f),
             isCollapsed = isCollapsed,
             backOnClick = backOnClick,
             editOnClick = editOnClick,
-            moreActionsOnClick = moreActionsOnClick
+            moreActionsOnClick = moreActionsOnClick,
+            title = code,
+            modifier = Modifier.zIndex(2f)
         )
 
         LazyColumn(state = lazyListState) {
@@ -181,17 +181,15 @@ private fun StockDetailsContent(
 
             if (code.isNotBlank()) {
                 item {
-                    AnimatedVisibility(visible = !isCollapsed) {
-                        StockInformation(
-                            code = code,
-                            description = description,
-                            secondaryDescription = secondaryDescription,
-                            beverageColor = beverageColor,
-                            beverageDescription = beverageDescription,
-                            ownerName = ownerName,
-                            unitName = unitName
-                        )
-                    }
+                    StockInformation(
+                        code = code,
+                        description = description,
+                        secondaryDescription = secondaryDescription,
+                        beverageColor = beverageColor,
+                        beverageDescription = beverageDescription,
+                        ownerName = ownerName,
+                        unitName = unitName
+                    )
                 }
             }
 
@@ -230,9 +228,9 @@ private fun StockInformation(
     modifier: Modifier = Modifier,
     code: String,
     description: String,
-    secondaryDescription: String,
-    beverageColor: String,
-    beverageDescription: String,
+    secondaryDescription: String?,
+    beverageColor: String?,
+    beverageDescription: String?,
     ownerName: String,
     unitName: String,
     alpha: Float = 1f
@@ -273,32 +271,38 @@ private fun StockInformation(
 
             Spacer(modifier = Modifier.height(DimenNano))
 
-            Text(
-                text = secondaryDescription,
-                style = Typography.labelMedium
-            )
+            secondaryDescription?.let {
+                Text(
+                    text = it,
+                    style = Typography.labelMedium
+                )
+            }
 
             Row(
                 modifier = Modifier
                     .padding(top = DimenSmall, bottom = DimenSmall)
             ) {
-                if (beverageColor.isNotBlank()) {
-                    Canvas(
-                        onDraw = {
-                            drawCircle(color = Color(beverageColor.toColorInt()))
-                        },
-                        modifier = Modifier
-                            .size(DimenSmall)
-                            .align(Alignment.CenterVertically)
-                    )
+                beverageColor?.let {
+                    if (it.isNotBlank()) {
+                        Canvas(
+                            onDraw = {
+                                drawCircle(color = Color(beverageColor.toColorInt()))
+                            },
+                            modifier = Modifier
+                                .size(DimenSmall)
+                                .align(Alignment.CenterVertically)
+                        )
+                    }
                 }
 
                 Spacer(modifier = Modifier.width(DimenMicro))
 
-                Text(
-                    text = beverageDescription,
-                    style = Typography.bodySmall
-                )
+                beverageDescription?.let {
+                    Text(
+                        text = it,
+                        style = Typography.bodySmall
+                    )
+                }
             }
 
             Row {

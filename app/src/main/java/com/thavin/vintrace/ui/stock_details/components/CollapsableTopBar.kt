@@ -23,6 +23,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -38,6 +39,7 @@ import com.thavin.vintrace.ui.theme.DimenSmall
 import com.thavin.vintrace.ui.theme.DimenTopBarPadding
 import com.thavin.vintrace.ui.theme.DimenZero
 import com.thavin.vintrace.ui.theme.Green60
+import com.thavin.vintrace.ui.theme.Typography
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -88,7 +90,8 @@ fun CollapsedTopBar(
     isCollapsed: Boolean,
     backOnClick: () -> Unit,
     editOnClick: (String) -> Unit,
-    moreActionsOnClick: () -> Unit
+    moreActionsOnClick: () -> Unit,
+    title: String
 ) {
     val backgroundColor: Color by animateColorAsState(
         if (isCollapsed) {
@@ -111,6 +114,7 @@ fun CollapsedTopBar(
                 backOnClick = backOnClick,
                 editOnClick = editOnClick,
                 moreActionsOnClick = moreActionsOnClick,
+                title = title,
                 modifier = Modifier.padding(
                     top = DimenTopBarPadding,
                     start = DimenMicro,
@@ -151,7 +155,13 @@ private fun NavBar(
             )
         }
 
-        Text(text = title)
+        Spacer(modifier = Modifier.width(DimenExtraLarge))
+
+        Text(
+            text = title,
+            style = Typography.titleSmall,
+            modifier = Modifier.align(Alignment.CenterVertically)
+        )
 
         Spacer(modifier = Modifier.weight(1f))
 

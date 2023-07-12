@@ -1,6 +1,7 @@
 package com.thavin.vintrace.ui.theme
 
 import androidx.compose.material3.Typography
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -28,11 +29,11 @@ val Typography = Typography(
         lineHeight = 24.sp,
         letterSpacing = 0.5.sp
     ),
-    titleLarge = TextStyle(
+    titleSmall = TextStyle(
         fontFamily = FontFamily(Font(R.font.montserrat)),
-        fontWeight = FontWeight.SemiBold,
-        fontSize = 28.sp,
-        color = Green60
+        fontWeight = FontWeight.Light,
+        fontSize = 18.sp,
+        color = Color.White
     ),
     titleMedium = TextStyle(
         fontFamily = FontFamily(Font(R.font.montserrat)),
@@ -40,6 +41,12 @@ val Typography = Typography(
         fontSize = 17.sp,
         lineHeight = 22.sp,
         color = Grey37
+    ),
+    titleLarge = TextStyle(
+        fontFamily = FontFamily(Font(R.font.montserrat)),
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 28.sp,
+        color = Green60
     ),
     labelSmall = TextStyle(
         fontFamily = FontFamily.Default,
