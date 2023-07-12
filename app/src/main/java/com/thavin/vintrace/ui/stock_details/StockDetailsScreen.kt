@@ -2,32 +2,20 @@ package com.thavin.vintrace.ui.stock_details
 
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -40,29 +28,26 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.zIndex
 import com.thavin.vintrace.R
 import com.thavin.vintrace.domain.stock_details.model.StockComponents
+import com.thavin.vintrace.ui.stock_details.components.CollapsedTopBar
+import com.thavin.vintrace.ui.stock_details.components.ExpandedTopBar
 import com.thavin.vintrace.ui.stock_details.contract.StockDetailsEvent
 import com.thavin.vintrace.ui.stock_details.contract.StockDetailsIntent
+import com.thavin.vintrace.ui.stock_details.mapper.toResources
 import com.thavin.vintrace.ui.theme.DimenCollapsedTopBarHeight
 import com.thavin.vintrace.ui.theme.DimenExpandedTopBarHeight
-import com.thavin.vintrace.ui.theme.DimenExtraLarge
 import com.thavin.vintrace.ui.theme.DimenLarge
 import com.thavin.vintrace.ui.theme.DimenMedium
-import com.thavin.vintrace.ui.theme.DimenMicro
 import com.thavin.vintrace.ui.theme.DimenNano
 import com.thavin.vintrace.ui.theme.DimenSmall
-import com.thavin.vintrace.ui.theme.DimenTopBarPadding
 import com.thavin.vintrace.ui.theme.DimenXxLarge
 import com.thavin.vintrace.ui.theme.DimenZero
-import com.thavin.vintrace.ui.theme.Green60
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -94,7 +79,7 @@ fun StockDetailsScreen(
 
         with(state.stockDetails) {
             StockDetailsContent(
-                images = images,
+                images = images.toResources(),
                 code = code,
                 description = description,
                 secondaryDescription = secondaryDescription,
@@ -122,7 +107,7 @@ fun StockDetailsScreen(
 
 @Composable
 private fun StockDetailsContent(
-    images: List<String>,
+    images: List<Int>,
     code: String,
     description: String,
     secondaryDescription: String,
@@ -151,34 +136,6 @@ private fun StockDetailsContent(
         }
     }
 
-    val imageResources = if (images.isEmpty()) {
-        listOf(R.drawable.img_generic)
-    } else {
-        images.map {
-            when (it) {
-                ImageTypes.WINE1.endpoint -> {
-                    R.drawable.img_wine_flowers
-                }
-
-                ImageTypes.WINE2.endpoint -> {
-                    R.drawable.img_wine_grapes
-                }
-
-                ImageTypes.WINE3.endpoint -> {
-                    R.drawable.img_wine_strawberry
-                }
-
-                ImageTypes.WINE4.endpoint -> {
-                    R.drawable.img_wine_table
-                }
-
-                else -> {
-                    R.drawable.img_generic
-                }
-            }
-        }
-    }
-
     val editToastMessage = stringResource(id = R.string.edit_button_toast)
 
     Box {
@@ -193,7 +150,7 @@ private fun StockDetailsContent(
         LazyColumn(state = lazyListState) {
             item {
                 ExpandedTopBar(
-                    headerImages = imageResources,
+                    headerImages = images,
                     backOnClick = backOnClick,
                     editOnClick = editOnClick,
                     moreActionsOnClick = moreActionsOnClick
@@ -274,88 +231,6 @@ private fun StockDetailsContent(
 //            item { TestItem() }
 //            item { TestItem() }
 //            item { TestItem() }
-        }
-    }
-}
-
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-private fun ExpandedTopBar(
-    headerImages: List<Int>,
-    backOnClick: () -> Unit,
-    editOnClick: (String) -> Unit,
-    moreActionsOnClick: () -> Unit
-) {
-
-    val pagerState = rememberPagerState(
-        initialPage = 0,
-        initialPageOffsetFraction = 0f
-    ) {
-        headerImages.size
-    }
-
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(DimenExpandedTopBarHeight)
-    ) {
-        HorizontalPager(state = pagerState) {
-            Image(
-                painter = painterResource(id = headerImages[it]),
-                contentDescription = stringResource(id = R.string.accessibility_header_image),
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxSize()
-            )
-        }
-
-        NavBar(
-            backOnClick = backOnClick,
-            editOnClick = editOnClick,
-            moreActionsOnClick = moreActionsOnClick,
-            modifier = Modifier.padding(
-                top = DimenExtraLarge,
-                start = DimenMicro,
-                end = DimenMicro
-            )
-        )
-    }
-}
-
-@Composable
-private fun CollapsedTopBar(
-    modifier: Modifier = Modifier,
-    isCollapsed: Boolean,
-    backOnClick: () -> Unit,
-    editOnClick: (String) -> Unit,
-    moreActionsOnClick: () -> Unit
-) {
-    val backgroundColor: Color by animateColorAsState(
-        if (isCollapsed) {
-            Green60
-        } else {
-            Color.Transparent
-        }
-    )
-
-    Box(
-        modifier = modifier
-            .background(backgroundColor)
-            .fillMaxWidth()
-            .height(DimenCollapsedTopBarHeight)
-    ) {
-        AnimatedVisibility(visible = isCollapsed) {
-            NavBar(
-                contentColor = Color.White,
-                alpha = 0.25f,
-                backOnClick = backOnClick,
-                editOnClick = editOnClick,
-                moreActionsOnClick = moreActionsOnClick,
-                modifier = Modifier.padding(
-                    top = DimenTopBarPadding,
-                    start = DimenMicro,
-                    end = DimenMicro
-                )
-            )
         }
     }
 }
@@ -498,83 +373,5 @@ private fun TestItem(
                 .padding(DimenXxLarge)
                 .fillMaxWidth()
         )
-    }
-}
-
-@Composable
-private fun NavBar(
-    modifier: Modifier = Modifier,
-    containerColor: Color = Color.White,
-    contentColor: Color = Green60,
-    alpha: Float = 1f,
-    title: String = stringResource(id = R.string.empty_String),
-    backOnClick: () -> Unit,
-    editOnClick: (String) -> Unit,
-    moreActionsOnClick: () -> Unit
-) {
-    val toastMessage = stringResource(id = R.string.edit_button_toast)
-
-    Row(
-        modifier = modifier
-    ) {
-        Button(
-            onClick = { backOnClick() },
-            colors = ButtonDefaults.buttonColors(containerColor = containerColor.copy(alpha = alpha)),
-            contentPadding = PaddingValues(DimenZero),
-            modifier = Modifier
-                .size(DimenLarge)
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_chevron_back),
-                contentDescription = stringResource(id = R.string.accessibility_back_button),
-                tint = contentColor
-            )
-        }
-
-        Text(text = title)
-
-        Spacer(modifier = Modifier.weight(1f))
-
-        Button(
-            onClick = { editOnClick(toastMessage) },
-            contentPadding = PaddingValues(
-                start = DimenSmall,
-                end = DimenSmall,
-                top = DimenMicro,
-                bottom = DimenMicro
-            ),
-            colors = ButtonDefaults.buttonColors(containerColor = containerColor.copy(alpha = alpha)),
-            modifier = Modifier
-                .height(DimenLarge)
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_edit),
-                contentDescription = stringResource(id = R.string.accessibility_edit_button),
-                tint = contentColor
-            )
-
-            Spacer(modifier = Modifier.width(DimenMicro))
-
-            Text(
-                text = stringResource(id = R.string.edit_button),
-                color = contentColor
-            )
-        }
-
-        Spacer(modifier = Modifier.width(DimenMicro))
-
-        Button(
-            onClick = { moreActionsOnClick() },
-            colors = ButtonDefaults.buttonColors(containerColor = containerColor.copy(alpha = alpha)),
-            contentPadding = PaddingValues(DimenZero),
-            modifier = Modifier
-                .size(DimenLarge)
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_more_actions),
-                contentDescription = stringResource(id = R.string.accessibility_more_actions_button),
-                tint = contentColor
-            )
-        }
     }
 }

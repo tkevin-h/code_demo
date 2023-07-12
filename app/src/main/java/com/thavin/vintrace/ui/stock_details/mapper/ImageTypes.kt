@@ -1,4 +1,4 @@
-package com.thavin.vintrace.ui.stock_details
+package com.thavin.vintrace.ui.stock_details.mapper
 
 enum class ImageTypes(val endpoint: String) {
     WINE1("/images/wine-1"),
