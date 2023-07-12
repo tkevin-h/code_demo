@@ -1,6 +1,10 @@
 package com.thavin.vintrace.ui.stock_details.mapper
 
 import com.thavin.vintrace.R
+import java.text.DecimalFormat
+import java.text.NumberFormat
+
+const val NUMBER_FORMAT_PATTERN = "#,###"
 
 fun List<String>.toResources(): List<Int> =
     if (this.isEmpty()) {
@@ -30,3 +34,8 @@ fun List<String>.toResources(): List<Int> =
             }
         }
     }
+
+fun Int.numberFormat(): String {
+    val formatter: NumberFormat = DecimalFormat(NUMBER_FORMAT_PATTERN)
+    return formatter.format(this)
+}

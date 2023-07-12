@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -44,7 +45,9 @@ import com.thavin.vintrace.ui.stock_details.components.CollapsedTopBar
 import com.thavin.vintrace.ui.stock_details.components.ExpandedTopBar
 import com.thavin.vintrace.ui.stock_details.contract.StockDetailsEvent
 import com.thavin.vintrace.ui.stock_details.contract.StockDetailsIntent
+import com.thavin.vintrace.ui.stock_details.mapper.numberFormat
 import com.thavin.vintrace.ui.stock_details.mapper.toResources
+import com.thavin.vintrace.ui.theme.Cyan59
 import com.thavin.vintrace.ui.theme.DimenCollapsedTopBarHeight
 import com.thavin.vintrace.ui.theme.DimenExpandedTopBarHeight
 import com.thavin.vintrace.ui.theme.DimenLarge
@@ -55,6 +58,9 @@ import com.thavin.vintrace.ui.theme.DimenSmall
 import com.thavin.vintrace.ui.theme.DimenXxLarge
 import com.thavin.vintrace.ui.theme.DimenZero
 import com.thavin.vintrace.ui.theme.Green60
+import com.thavin.vintrace.ui.theme.Grey21
+import com.thavin.vintrace.ui.theme.Grey56
+import com.thavin.vintrace.ui.theme.Grey88
 import com.thavin.vintrace.ui.theme.Typography
 import org.koin.androidx.compose.koinViewModel
 
@@ -152,8 +158,6 @@ private fun StockDetailsContent(
         }
     }
 
-    val editToastMessage = stringResource(id = R.string.edit_button_toast)
-
     Box {
         CollapsedTopBar(
             modifier = Modifier.zIndex(2f),
@@ -192,29 +196,13 @@ private fun StockDetailsContent(
             item {
                 Spacer(modifier = Modifier.height(DimenLarge))
 
-                Row(modifier = Modifier.fillMaxWidth()) {
-                    Text(
-                        text = stringResource(id = R.string.levels_title),
-                        modifier = Modifier.align(Alignment.CenterVertically)
-                    )
-                    Spacer(modifier = Modifier.weight(1f))
-                    TextButton(
-                        onClick = { editOnClick(editToastMessage) }
-                    ) {
-                        Text(text = stringResource(id = R.string.edit_button))
-                    }
-                }
-            }
-
-            item {
                 LevelsInformation(
                     onHand = onHand,
                     committed = committed,
                     inProduction = inProduction,
-                    available = available
+                    available = available,
+                    editOnClick = editOnClick
                 )
-
-                Spacer(modifier = Modifier.height(DimenSmall))
             }
 
             if (components.isNotEmpty()) {
@@ -341,7 +329,7 @@ private fun StockInformation(
                 Text(
                     text = ownerName,
                     style = Typography.bodySmall
-                ) 
+                )
             }
 
             Spacer(modifier = Modifier.height(DimenNano))
@@ -369,39 +357,140 @@ private fun LevelsInformation(
     committed: Int,
     inProduction: Int,
     available: Int,
+    editOnClick: (String) -> Unit
 ) {
+    val editToastMessage = stringResource(id = R.string.edit_button_toast)
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = DimenMedium, end = DimenMedium)
+    ) {
+        Text(
+            text = stringResource(id = R.string.levels_title),
+            style = Typography.titleMedium,
+            modifier = Modifier
+                .align(Alignment.CenterVertically)
+        )
+
+        Spacer(modifier = Modifier.weight(1f))
+
+        TextButton(
+            onClick = { editOnClick(editToastMessage) }
+        ) {
+            Text(text = stringResource(id = R.string.edit_button))
+        }
+    }
+
     Card(
         colors = CardDefaults.cardColors(containerColor = Color.White),
-        shape = RoundedCornerShape(DimenSmall),
+        shape = RoundedCornerShape(DimenMicro),
         elevation = CardDefaults.cardElevation(DimenNano),
         modifier = modifier
             .fillMaxWidth()
+            .padding(start = DimenMicro, end = DimenMicro)
     ) {
         Column(
-            modifier = Modifier.padding(DimenSmall)
+            modifier = Modifier
+                .padding(DimenSmall)
         ) {
             Row {
-                Text(text = stringResource(id = R.string.levels_on_hand_title))
+                Text(
+                    text = stringResource(id = R.string.levels_on_hand_title),
+                    style = Typography.bodyMedium,
+                    color = Grey56
+                )
+
                 Spacer(modifier = Modifier.weight(1f))
-                Text(text = onHand.toString())
+
+                Text(
+                    text = onHand.numberFormat(),
+                    style = Typography.bodyMedium,
+                    color = Grey21
+                )
             }
 
-            Row {
-                Text(text = stringResource(id = R.string.levels_committed_title))
-                Spacer(modifier = Modifier.weight(1f))
-                Text(text = committed.toString())
-            }
+            Spacer(modifier = Modifier.height(DimenSmall))
+
+            Divider(
+                color = Grey88,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = DimenMicro, end = DimenMicro)
+            )
+
+            Spacer(modifier = Modifier.height(DimenSmall))
 
             Row {
-                Text(text = stringResource(id = R.string.levels_in_production_title))
+                Text(
+                    text = stringResource(id = R.string.levels_committed_title),
+                    style = Typography.bodyMedium,
+                    color = Grey56
+                )
+
                 Spacer(modifier = Modifier.weight(1f))
-                Text(text = inProduction.toString())
+
+                Text(
+                    text = committed.numberFormat(),
+                    style = Typography.bodyMedium,
+                    color = Grey21
+                )
             }
 
+            Spacer(modifier = Modifier.height(DimenSmall))
+
+            Divider(
+                color = Grey88,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = DimenMicro, end = DimenMicro)
+            )
+
+            Spacer(modifier = Modifier.height(DimenSmall))
+
             Row {
-                Text(text = stringResource(id = R.string.levels_available_title))
+                Text(
+                    text = stringResource(id = R.string.levels_in_production_title),
+                    style = Typography.bodyMedium,
+                    color = Grey56
+                )
+
                 Spacer(modifier = Modifier.weight(1f))
-                Text(text = available.toString())
+
+                Text(
+                    text = inProduction.numberFormat(),
+                    style = Typography.bodyMedium,
+                    color = Grey21
+                )
+
+            }
+
+            Spacer(modifier = Modifier.height(DimenSmall))
+
+            Divider(
+                color = Grey88,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = DimenMicro, end = DimenMicro)
+            )
+
+            Spacer(modifier = Modifier.height(DimenSmall))
+
+            Row {
+                Text(
+                    text = stringResource(id = R.string.levels_available_title),
+                    style = Typography.bodyMedium,
+                    color = Grey56
+                )
+
+                Spacer(modifier = Modifier.weight(1f))
+
+                Text(
+                    text = available.numberFormat(),
+                    style = Typography.bodyMedium,
+                    color = Cyan59
+                )
+
             }
         }
     }

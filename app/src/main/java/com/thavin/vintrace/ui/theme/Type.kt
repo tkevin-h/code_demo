@@ -34,6 +34,13 @@ val Typography = Typography(
         fontSize = 28.sp,
         color = Green60
     ),
+    titleMedium = TextStyle(
+        fontFamily = FontFamily(Font(R.font.montserrat)),
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 17.sp,
+        lineHeight = 22.sp,
+        color = Grey37
+    ),
     labelSmall = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Medium,
@@ -46,5 +53,13 @@ val Typography = Typography(
         fontWeight = FontWeight.Normal,
         fontSize = 13.sp,
         color = Grey56
+    ),
+    labelLarge = TextStyle(
+        fontFamily = FontFamily(Font(R.font.montserrat)),
+        fontWeight = FontWeight.Normal,
+        fontSize = 14.sp,
+        lineHeight = 21.sp,
+        color = Green60
     )
+
 )
