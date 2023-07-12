@@ -3,6 +3,9 @@ package com.thavin.vintrace.ui.stock
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.thavin.vintrace.domain.stock.StockRepository
+import com.thavin.vintrace.ui.stock.contract.StockEvent
+import com.thavin.vintrace.ui.stock.contract.StockIntent
+import com.thavin.vintrace.ui.stock.contract.StockState
 import com.thavin.vintrace.util.ResourceResult
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -30,7 +33,10 @@ class StockViewModel(
                 }
             }
             is StockIntent.StockOnClick -> {
-
+                setState { copy(event = StockEvent.Navigate(intent.stockId)) }
+            }
+            is StockIntent.SetIdleEvent -> {
+                setState { copy(event = StockEvent.Idle) }
             }
         }
     }

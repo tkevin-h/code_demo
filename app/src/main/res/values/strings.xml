@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">Vintrace</string>
+
+    <string name="empty_String" />
+
+    <!-- Stock Details -->
+    <string name="edit_button">Edit</string>
+    <string name="accessibility_header_image">Header image</string>
+    <string name="accessibility_back_button">Back button</string>
 </resources>

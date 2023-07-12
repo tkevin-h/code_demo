@@ -7,11 +7,11 @@ class StockServiceImpl(
 ) : StockService {
 
     private companion object {
-        const val ASSETS_PATH = "stock/"
+        const val STOCK_ASSETS_PATH = "stock/"
     }
 
     override suspend fun getStock(): List<String> {
-        val files = context.assets.list(ASSETS_PATH) ?: return emptyList()
+        val files = context.assets.list(STOCK_ASSETS_PATH) ?: return emptyList()
 
         return files.toList()
     }

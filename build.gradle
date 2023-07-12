@@ -20,9 +20,8 @@ buildscript {
         // Koin
         koin_version = "3.4.2"
 
-        // Glide
-        glide_version = "4.15.1"
-        glide_compose_version = "1.0.0-alpha.1"
+        // Accompanist
+        accompanist_systemuicontroller_version = '0.30.1'
     }
 
     repositories {
