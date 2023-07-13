@@ -18,8 +18,44 @@
     <string name="accessibility_owner_icon">Owner icon</string>
     <string name="accessibility_measuring_cup_icon">Measuring cup icon</string>
     <string name="accessibility_icon_forward">Forward button</string>
+    <string name="accessibility_error_icon">Error icon</string>
 
     <!-- Other -->
     <string name="edit_button_toast">This feature hasn\'t been implemented!</string>
     <string name="vintrace_home_url">https://www.vintrace.com/</string>
+
+    <!-- Test Tags -->
+    <string name="test_tag_code">code</string>
+    <string name="test_tag_description">description</string>
+    <string name="test_tag_secondary_description">secondaryDescription</string>
+    <string name="test_tag_beverage_description">beverageDescription</string>
+    <string name="test_tag_owner_name">ownerName</string>
+    <string name="test_tag_unit_name">unitName</string>
+
+    <string name="test_tag_level_title">levelTitle</string>
+    <string name="test_tag_edit_button">editButton</string>
+    <string name="test_tag_on_hand_title">onHandTitle</string>
+    <string name="test_tag_on_hand_amount">onHandAmount</string>
+    <string name="test_tag_committed_title">committedTitle</string>
+    <string name="test_tag_committed_amount">committedAmount</string>
+    <string name="test_tag_in_production_title">inProductionTitle</string>
+    <string name="test_tag_in_production_amount">inProductionAmount</string>
+    <string name="test_tag_available_title">availableTitle</string>
+    <string name="test_tag_available_amount">availableAmount</string>
+
+    <string name="test_tag_components_title">componentsTitle</string>
+    <string name="test_tag_components_amount">componentsAmount</string>
+    <string name="test_tag_components_code">componentsCode</string>
+    <string name="test_tag_components_description">componentsDescription</string>
+    <string name="test_tag_components_unit">componentsUnit</string>
+
+    <string name="test_tag_nav_back_button">navBackButton</string>
+    <string name="test_tag_nav_edit_button">navEditButton</string>
+    <string name="test_tag_nav_more_actions_button">navMoreActionsButton</string>
+    <string name="test_tag_nav_title">navTitle</string>
+
+    <string name="test_tag_error_icon">navTitle</string>
+    <string name="test_tag_error_message">errorMessage</string>
+
+    <string name="test_tag_stock_id">stockId</string>
 </resources>

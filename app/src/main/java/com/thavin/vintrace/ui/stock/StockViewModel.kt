@@ -44,7 +44,11 @@ class StockViewModel(
     private fun processResult(result: ResourceResult<List<String>>) {
         when (result) {
             is ResourceResult.Loading -> {
-
+                if (result.isLoading) {
+                    setState { copy(isLoading = true) }
+                } else {
+                    setState { copy(isLoading = false) }
+                }
             }
             is ResourceResult.Success -> {
                 result.data?.let {
@@ -52,7 +56,10 @@ class StockViewModel(
                 }
             }
             is ResourceResult.Error -> {
-
+                setState { copy(
+                    isError = true,
+                    errorMessage = result.message
+                ) }
             }
         }
     }

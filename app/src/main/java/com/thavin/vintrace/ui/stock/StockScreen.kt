@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -18,7 +19,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import com.thavin.vintrace.R
+import com.thavin.vintrace.ui.components.ErrorScreen
+import com.thavin.vintrace.ui.components.LoadingOverlay
 import com.thavin.vintrace.ui.navigation.Routes
 import com.thavin.vintrace.ui.stock.contract.StockEvent
 import com.thavin.vintrace.ui.stock.contract.StockIntent
@@ -27,6 +34,7 @@ import com.thavin.vintrace.ui.theme.DimenMedium
 import com.thavin.vintrace.ui.theme.DimenNano
 import com.thavin.vintrace.ui.theme.DimenSmall
 import com.thavin.vintrace.ui.theme.Green60
+import com.thavin.vintrace.ui.theme.VintraceTheme
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -41,18 +49,37 @@ fun StockScreen(stockOnClick: (String, String) -> Unit) {
             stockViewModel.processIntent(StockIntent.SetIdleEvent)
             stockOnClick(Routes.STOCK_DETAILS.route, state.event.stockId)
         }
+
         else -> {}
     }
 
     Scaffold {
         it.calculateTopPadding()
 
-        StockContents(
-            stock = state.stock,
-            stockOnClick = { stockId ->
-                stockViewModel.processIntent(StockIntent.StockOnClick(stockId))
+        with(state) {
+            when {
+                isLoading -> {
+                    LoadingOverlay()
+                }
+
+                isError -> {
+                    ErrorScreen(
+                        message = errorMessage,
+                        modifier = Modifier
+                            .fillMaxSize()
+                    )
+                }
+
+                else -> {
+                    StockContents(
+                        stock = state.stock,
+                        stockOnClick = { stockId ->
+                            stockViewModel.processIntent(StockIntent.StockOnClick(stockId))
+                        }
+                    )
+                }
             }
-        )
+        }
     }
 }
 
@@ -93,8 +120,8 @@ private fun StockItem(
         modifier = modifier
             .padding(DimenSmall)
             .clickable {
-            stockOnClick(stockId)
-        }
+                stockOnClick(stockId)
+            }
     ) {
         Text(
             text = stockId,
@@ -102,6 +129,7 @@ private fun StockItem(
             modifier = Modifier
                 .padding(DimenMedium)
                 .fillMaxWidth()
+                .testTag(stringResource(id = R.string.test_tag_stock_id))
         )
     }
 }
@@ -116,4 +144,21 @@ private fun TopBar(
             .fillMaxWidth()
             .height(DimenCollapsedTopBarHeight)
     )
+}
+
+@Preview(showSystemUi = true)
+@Composable
+fun ErrorScreenPreview() {
+    VintraceTheme {
+        StockContents(
+            stock = listOf(
+                "stock-item-1",
+                "stock-item-2",
+                "stock-item-3",
+                "stock-item-4",
+                "stock-item-5"
+            ),
+            stockOnClick = {}
+        )
+    }
 }

@@ -5,4 +5,5 @@ sealed class StockDetailsEvent {
     data class Navigate(val id: String) : StockDetailsEvent()
     object ShowWebView : StockDetailsEvent()
     data class ShowToast(val message: String) : StockDetailsEvent()
+    object NavigateBack : StockDetailsEvent()
 }

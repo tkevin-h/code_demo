@@ -79,4 +79,11 @@ dependencies {
 
     // Accompanist
     implementation "com.google.accompanist:accompanist-systemuicontroller:$accompanist_systemuicontroller_version"
+
+    // Unit Test
+    testImplementation "app.cash.turbine:turbine:$turbine_version"
+    testImplementation "com.google.truth:truth:$truth_version"
+    testImplementation "junit:junit:$junit_version"
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$kotlinx_coroutines_test_version"
+    testImplementation "io.mockk:mockk:$mockk_version"
 }

@@ -26,6 +26,7 @@ class StockDetailsRepositoryImpl(
                     emit(ResourceResult.Loading(isLoading = false))
                     emit(ResourceResult.Success(stockDetails))
                 } catch (e: Exception) {
+                    emit(ResourceResult.Loading(isLoading = false))
                     e.message?.let {
                         emit(ResourceResult.Error(message = it))
                     } ?: emit(ResourceResult.Error(message = ERROR_MESSAGE))

@@ -1,15 +1,17 @@
 package com.thavin.vintrace.ui.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.thavin.vintrace.R
 import com.thavin.vintrace.ui.stock.StockScreen
 import com.thavin.vintrace.ui.stock_details.StockDetailsScreen
-import com.thavin.vintrace.ui.stock_details.components.MoreActionsWebView
+import com.thavin.vintrace.ui.components.WebView
 
 @Composable
 fun MainNavHost(
@@ -43,7 +45,8 @@ fun MainNavHost(
         }
 
         composable(route = Routes.MORE_ACTIONS_WEB_VIEW.route) {
-            MoreActionsWebView()
+            val url = stringResource(id = R.string.vintrace_home_url)
+            WebView(url = url)
         }
     }
 }

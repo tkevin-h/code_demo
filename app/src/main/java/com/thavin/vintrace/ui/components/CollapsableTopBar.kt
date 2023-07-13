@@ -1,4 +1,4 @@
-package com.thavin.vintrace.ui.stock_details.components
+package com.thavin.vintrace.ui.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
@@ -27,8 +27,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import com.thavin.vintrace.R
 import com.thavin.vintrace.ui.theme.DimenCollapsedTopBarHeight
 import com.thavin.vintrace.ui.theme.DimenExpandedTopBarHeight
@@ -40,6 +42,7 @@ import com.thavin.vintrace.ui.theme.DimenTopBarPadding
 import com.thavin.vintrace.ui.theme.DimenZero
 import com.thavin.vintrace.ui.theme.Green60
 import com.thavin.vintrace.ui.theme.Typography
+import com.thavin.vintrace.ui.theme.VintraceTheme
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -67,7 +70,8 @@ fun ExpandedTopBar(
                 painter = painterResource(id = headerImages[it]),
                 contentDescription = stringResource(id = R.string.accessibility_header_image),
                 contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier
+                    .fillMaxSize()
             )
         }
 
@@ -75,11 +79,12 @@ fun ExpandedTopBar(
             backOnClick = backOnClick,
             editOnClick = editOnClick,
             moreActionsOnClick = moreActionsOnClick,
-            modifier = Modifier.padding(
-                top = DimenExtraLarge,
-                start = DimenMicro,
-                end = DimenMicro
-            )
+            modifier = Modifier
+                .padding(
+                    top = DimenExtraLarge,
+                    start = DimenMicro,
+                    end = DimenMicro
+                )
         )
     }
 }
@@ -147,6 +152,7 @@ private fun NavBar(
             contentPadding = PaddingValues(DimenZero),
             modifier = Modifier
                 .size(DimenLarge)
+                .testTag(stringResource(id = R.string.test_tag_nav_back_button))
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_chevron_back),
@@ -160,7 +166,9 @@ private fun NavBar(
         Text(
             text = title,
             style = Typography.titleSmall,
-            modifier = Modifier.align(Alignment.CenterVertically)
+            modifier = Modifier
+                .align(Alignment.CenterVertically)
+                .testTag(stringResource(id = R.string.test_tag_nav_title))
         )
 
         Spacer(modifier = Modifier.weight(1f))
@@ -176,6 +184,7 @@ private fun NavBar(
             colors = ButtonDefaults.buttonColors(containerColor = containerColor.copy(alpha = alpha)),
             modifier = Modifier
                 .height(DimenLarge)
+                .testTag(stringResource(id = R.string.test_tag_nav_edit_button))
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_edit),
@@ -199,6 +208,7 @@ private fun NavBar(
             contentPadding = PaddingValues(DimenZero),
             modifier = Modifier
                 .size(DimenLarge)
+                .testTag(stringResource(id = R.string.test_tag_nav_more_actions_button))
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_more_actions),
@@ -206,5 +216,32 @@ private fun NavBar(
                 tint = contentColor
             )
         }
+    }
+}
+
+@Preview
+@Composable
+fun ExpandedTopBarPreview() {
+    VintraceTheme {
+        ExpandedTopBar(
+            headerImages = listOf(R.drawable.img_generic),
+            backOnClick = {},
+            editOnClick = {},
+            moreActionsOnClick = {}
+        )
+    }
+}
+
+@Preview
+@Composable
+fun CollapsedTopBarPreview() {
+    VintraceTheme {
+        CollapsedTopBar(
+            isCollapsed = true,
+            backOnClick = {},
+            editOnClick = {},
+            moreActionsOnClick = {},
+            title = "CHRD/EU/2016"
+        )
     }
 }

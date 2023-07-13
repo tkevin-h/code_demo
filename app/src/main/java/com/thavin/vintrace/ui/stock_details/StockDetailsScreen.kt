@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -33,14 +34,18 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.zIndex
 import androidx.core.graphics.toColorInt
 import com.thavin.vintrace.R
 import com.thavin.vintrace.domain.stock_details.model.StockComponents
-import com.thavin.vintrace.ui.stock_details.components.CollapsedTopBar
-import com.thavin.vintrace.ui.stock_details.components.ExpandedTopBar
+import com.thavin.vintrace.ui.components.CollapsedTopBar
+import com.thavin.vintrace.ui.components.ErrorScreen
+import com.thavin.vintrace.ui.components.ExpandedTopBar
+import com.thavin.vintrace.ui.components.LoadingOverlay
 import com.thavin.vintrace.ui.stock_details.contract.StockDetailsEvent
 import com.thavin.vintrace.ui.stock_details.contract.StockDetailsIntent
 import com.thavin.vintrace.ui.stock_details.mapper.numberFormat
@@ -63,6 +68,7 @@ import com.thavin.vintrace.ui.theme.Grey63
 import com.thavin.vintrace.ui.theme.Grey76
 import com.thavin.vintrace.ui.theme.Grey88
 import com.thavin.vintrace.ui.theme.Typography
+import com.thavin.vintrace.ui.theme.VintraceTheme
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -92,38 +98,69 @@ fun StockDetailsScreen(
             moreActionsOnClick()
         }
 
+        is StockDetailsEvent.NavigateBack -> {
+            stockDetailsViewModel.processIntent(StockDetailsIntent.SetIdleEvent)
+            backOnClick()
+        }
+
         else -> {}
     }
 
     Scaffold {
         it.calculateTopPadding()
 
-        with(state.stockDetails) {
-            StockDetailsContent(
-                images = images.toResources(),
-                code = code,
-                description = description,
-                secondaryDescription = secondaryDescription,
-                beverageColor = color,
-                beverageDescription = beverageDescription,
-                ownerName = ownerName,
-                unitName = unitName,
-                onHand = stockLevels.onHand,
-                committed = stockLevels.committed,
-                inProduction = stockLevels.inProduction,
-                available = stockLevels.available,
-                components = stockComponents,
-                componentOnClick = { id ->
-                    stockDetailsViewModel.processIntent(StockDetailsIntent.ComponentOnClick(id))
-                },
-                backOnClick = backOnClick,
-                editOnClick = { message ->
-                    stockDetailsViewModel.processIntent(StockDetailsIntent.EditOnClick(message))
-                },
-                moreActionsOnClick = {
-                    stockDetailsViewModel.processIntent(StockDetailsIntent.MoreActionsOnClick)
+        with(state) {
+            when {
+                isLoading -> {
+                    LoadingOverlay()
                 }
-            )
+
+                isError -> {
+                    ErrorScreen(
+                        message = errorMessage,
+                        modifier = Modifier
+                            .fillMaxSize()
+                    )
+                }
+
+                else -> {
+                    with(stockDetails) {
+                        StockDetailsContent(
+                            images = images.toResources(),
+                            code = code,
+                            description = description,
+                            secondaryDescription = secondaryDescription,
+                            beverageColor = color,
+                            beverageDescription = beverageDescription,
+                            ownerName = ownerName,
+                            unitName = unitName,
+                            onHand = stockLevels.onHand,
+                            committed = stockLevels.committed,
+                            inProduction = stockLevels.inProduction,
+                            available = stockLevels.available,
+                            components = stockComponents,
+                            componentOnClick = { id ->
+                                stockDetailsViewModel.processIntent(
+                                    StockDetailsIntent.ComponentOnClick(
+                                        id
+                                    )
+                                )
+                            },
+                            backOnClick = { stockDetailsViewModel.processIntent(StockDetailsIntent.BackOnClick) },
+                            editOnClick = { message ->
+                                stockDetailsViewModel.processIntent(
+                                    StockDetailsIntent.EditOnClick(
+                                        message
+                                    )
+                                )
+                            },
+                            moreActionsOnClick = {
+                                stockDetailsViewModel.processIntent(StockDetailsIntent.MoreActionsOnClick)
+                            }
+                        )
+                    }
+                }
+            }
         }
     }
 }
@@ -179,18 +216,16 @@ private fun StockDetailsContent(
                 )
             }
 
-            if (code.isNotBlank()) {
-                item {
-                    StockInformation(
-                        code = code,
-                        description = description,
-                        secondaryDescription = secondaryDescription,
-                        beverageColor = beverageColor,
-                        beverageDescription = beverageDescription,
-                        ownerName = ownerName,
-                        unitName = unitName
-                    )
-                }
+            item {
+                StockInformation(
+                    code = code,
+                    description = description,
+                    secondaryDescription = secondaryDescription,
+                    beverageColor = beverageColor,
+                    beverageDescription = beverageDescription,
+                    ownerName = ownerName,
+                    unitName = unitName
+                )
             }
 
             item {
@@ -259,14 +294,18 @@ private fun StockInformation(
 
             Text(
                 text = code,
-                style = Typography.titleLarge
+                style = Typography.titleLarge,
+                modifier = Modifier
+                    .testTag(stringResource(id = R.string.test_tag_code))
             )
 
             Spacer(modifier = Modifier.height(DimenNano))
 
             Text(
                 text = description,
-                style = Typography.bodyMedium
+                style = Typography.bodyMedium,
+                modifier = Modifier
+                    .testTag(stringResource(id = R.string.test_tag_description))
             )
 
             Spacer(modifier = Modifier.height(DimenNano))
@@ -274,7 +313,9 @@ private fun StockInformation(
             secondaryDescription?.let {
                 Text(
                     text = it,
-                    style = Typography.labelMedium
+                    style = Typography.labelMedium,
+                    modifier = Modifier
+                        .testTag(stringResource(id = R.string.test_tag_secondary_description))
                 )
             }
 
@@ -300,7 +341,10 @@ private fun StockInformation(
                 beverageDescription?.let {
                     Text(
                         text = it,
-                        style = Typography.bodySmall
+                        style = Typography.bodySmall,
+                        modifier = Modifier
+                            .testTag(stringResource(id = R.string.test_tag_beverage_description))
+
                     )
                 }
             }
@@ -316,7 +360,9 @@ private fun StockInformation(
 
                 Text(
                     text = ownerName,
-                    style = Typography.bodySmall
+                    style = Typography.bodySmall,
+                    modifier = Modifier
+                        .testTag(stringResource(id = R.string.test_tag_owner_name))
                 )
             }
 
@@ -328,10 +374,14 @@ private fun StockInformation(
                     contentDescription = stringResource(id = R.string.accessibility_measuring_cup_icon),
                     tint = Green60
                 )
+
                 Spacer(modifier = Modifier.width(DimenMicro))
+
                 Text(
                     text = unitName,
-                    style = Typography.bodySmall
+                    style = Typography.bodySmall,
+                    modifier = Modifier
+                        .testTag(stringResource(id = R.string.test_tag_unit_name))
                 )
             }
         }
@@ -360,6 +410,7 @@ private fun LevelsInformation(
                 style = Typography.titleMedium,
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
+                    .testTag(stringResource(id = R.string.test_tag_level_title))
             )
 
             Spacer(modifier = Modifier.weight(1f))
@@ -367,7 +418,11 @@ private fun LevelsInformation(
             TextButton(
                 onClick = { editOnClick(editToastMessage) }
             ) {
-                Text(text = stringResource(id = R.string.edit_button))
+                Text(
+                    text = stringResource(id = R.string.edit_button),
+                    modifier = Modifier
+                        .testTag(stringResource(id = R.string.test_tag_edit_button))
+                )
             }
         }
 
@@ -387,7 +442,9 @@ private fun LevelsInformation(
                     Text(
                         text = stringResource(id = R.string.levels_on_hand_title),
                         style = Typography.bodyMedium,
-                        color = Grey56
+                        color = Grey56,
+                        modifier = Modifier
+                            .testTag(stringResource(id = R.string.test_tag_on_hand_title))
                     )
 
                     Spacer(modifier = Modifier.weight(1f))
@@ -395,7 +452,9 @@ private fun LevelsInformation(
                     Text(
                         text = onHand.numberFormat(),
                         style = Typography.bodyMedium,
-                        color = Grey21
+                        color = Grey21,
+                        modifier = Modifier
+                            .testTag(stringResource(id = R.string.test_tag_on_hand_amount))
                     )
                 }
 
@@ -414,7 +473,9 @@ private fun LevelsInformation(
                     Text(
                         text = stringResource(id = R.string.levels_committed_title),
                         style = Typography.bodyMedium,
-                        color = Grey56
+                        color = Grey56,
+                        modifier = Modifier
+                            .testTag(stringResource(id = R.string.test_tag_committed_title))
                     )
 
                     Spacer(modifier = Modifier.weight(1f))
@@ -422,7 +483,9 @@ private fun LevelsInformation(
                     Text(
                         text = committed.numberFormat(),
                         style = Typography.bodyMedium,
-                        color = Grey21
+                        color = Grey21,
+                        modifier = Modifier
+                            .testTag(stringResource(id = R.string.test_tag_committed_amount))
                     )
                 }
 
@@ -441,7 +504,9 @@ private fun LevelsInformation(
                     Text(
                         text = stringResource(id = R.string.levels_in_production_title),
                         style = Typography.bodyMedium,
-                        color = Grey56
+                        color = Grey56,
+                        modifier = Modifier
+                            .testTag(stringResource(id = R.string.test_tag_in_production_title))
                     )
 
                     Spacer(modifier = Modifier.weight(1f))
@@ -449,7 +514,9 @@ private fun LevelsInformation(
                     Text(
                         text = inProduction.numberFormat(),
                         style = Typography.bodyMedium,
-                        color = Grey21
+                        color = Grey21,
+                        modifier = Modifier
+                            .testTag(stringResource(id = R.string.test_tag_in_production_amount))
                     )
 
                 }
@@ -466,10 +533,19 @@ private fun LevelsInformation(
                 Spacer(modifier = Modifier.height(DimenSmall))
 
                 Row {
+                    val availableTextColor =
+                        when {
+                            available > 0 -> Cyan59
+                            available < 0 -> Color.Red
+                            else -> Grey21
+                        }
+
                     Text(
                         text = stringResource(id = R.string.levels_available_title),
                         style = Typography.bodyMedium,
-                        color = Grey56
+                        color = Grey56,
+                        modifier = Modifier
+                            .testTag(stringResource(id = R.string.test_tag_available_title))
                     )
 
                     Spacer(modifier = Modifier.weight(1f))
@@ -477,9 +553,10 @@ private fun LevelsInformation(
                     Text(
                         text = available.numberFormat(),
                         style = Typography.bodyMedium,
-                        color = Cyan59
+                        color = availableTextColor,
+                        modifier = Modifier
+                            .testTag(stringResource(id = R.string.test_tag_available_amount))
                     )
-
                 }
             }
         }
@@ -504,7 +581,9 @@ private fun ComponentsInformation(
             Text(
                 text = stringResource(id = R.string.components_title),
                 style = Typography.titleMedium,
-                modifier = Modifier.align(Alignment.CenterVertically)
+                modifier = Modifier
+                    .align(Alignment.CenterVertically)
+                    .testTag(stringResource(id = R.string.test_tag_components_title))
             )
 
             Spacer(modifier = Modifier.width(DimenNano))
@@ -513,7 +592,9 @@ private fun ComponentsInformation(
                 text = "(${components.size})",
                 style = Typography.labelLarge,
                 color = Grey63,
-                modifier = Modifier.align(Alignment.CenterVertically)
+                modifier = Modifier
+                    .align(Alignment.CenterVertically)
+                    .testTag(stringResource(id = R.string.test_tag_components_amount))
             )
         }
 
@@ -542,7 +623,9 @@ private fun ComponentsInformation(
                             Text(
                                 text = stockComponents.code,
                                 style = Typography.bodyMedium,
-                                color = Green60
+                                color = Green60,
+                                modifier = Modifier
+                                    .testTag(stringResource(id = R.string.test_tag_components_code))
                             )
 
                             Spacer(modifier = Modifier.height(DimenNano))
@@ -550,7 +633,9 @@ private fun ComponentsInformation(
                             Text(
                                 text = stockComponents.description,
                                 style = Typography.bodySmall,
-                                color = Grey56
+                                color = Grey56,
+                                modifier = Modifier
+                                    .testTag(stringResource(id = R.string.test_tag_components_description))
                             )
                         }
 
@@ -559,7 +644,9 @@ private fun ComponentsInformation(
                         Text(
                             text = stockComponents.quantity,
                             style = Typography.bodyMedium,
-                            color = Grey31
+                            color = Grey31,
+                            modifier = Modifier
+                                .testTag(stringResource(id = R.string.test_tag_components_unit))
                         )
 
                         Spacer(modifier = Modifier.width(DimenMicro))
@@ -586,5 +673,38 @@ private fun ComponentsInformation(
                 }
             }
         }
+    }
+}
+
+@Preview(showSystemUi = true)
+@Composable
+fun StockDetailsContentPreview() {
+    VintraceTheme {
+        StockDetailsContent(
+            images = listOf(R.drawable.img_generic),
+            code = "CHRD/EU/2016",
+            description = "Standard EU export bottle",
+            secondaryDescription = "Bottle - 750 ml",
+            beverageColor = "#DAC88B",
+            beverageDescription = "2016 Chardonnay YV/MP",
+            ownerName = "vintrace Winery",
+            unitName = "Single bottle (x1)",
+            onHand = 68000,
+            committed = 20000,
+            inProduction = 35000,
+            available = 68000,
+            components = listOf(
+                StockComponents(
+                    id = "/stock-items/2",
+                    code = "16YAVCRD01/BLK",
+                    description = "2016 Chardonnay YV/MP",
+                    quantity = "12"
+                ),
+            ),
+            componentOnClick = {},
+            backOnClick = {},
+            editOnClick = {},
+            moreActionsOnClick = {}
+        )
     }
 }

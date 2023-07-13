@@ -53,13 +53,20 @@ class StockDetailsViewModel(
             is StockDetailsIntent.SetIdleEvent -> {
                 setState { copy(event = StockDetailsEvent.Idle) }
             }
+            is StockDetailsIntent.BackOnClick -> {
+                setState { copy(event = StockDetailsEvent.NavigateBack) }
+            }
         }
     }
 
     private fun processResult(result: ResourceResult<StockDetails>) {
         when (result) {
             is ResourceResult.Loading -> {
-
+                if (result.isLoading) {
+                    setState { copy(isLoading = true) }
+                } else {
+                    setState { copy(isLoading = false) }
+                }
             }
 
             is ResourceResult.Success -> {
@@ -69,7 +76,10 @@ class StockDetailsViewModel(
             }
 
             is ResourceResult.Error -> {
-
+                setState { copy(
+                    isError = true,
+                    errorMessage = result.message
+                ) }
             }
         }
     }
