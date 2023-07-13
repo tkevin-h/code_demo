@@ -5,14 +5,9 @@ import com.thavin.vintrace.domain.stock_details.model.StockDetails
 import com.thavin.vintrace.domain.stock_details.model.StockLevels
 
 private const val WHITESPACE = " "
-private const val EMPTY = ""
-private const val STOCK_ITEM_1 = "stock-item-1"
-private const val STOCK_ITEM_2 = "stock-item-2"
-private const val STOCK_ITEM_3 = "stock-item-3"
-private const val STOCK_ITEM_4 = "stock-item-4"
-private const val STOCK_ITEM_5 = "stock-item-5"
+private const val STOCK_ITEM_PREFIX = "stock-item-"
+private const val COMPONENT_PATH_DELIMITER = "/"
 private const val COLOR_PREFIX = "#"
-
 
 fun StockDetailsResponse.toStockDetails() =
     StockDetails(
@@ -62,27 +57,5 @@ private fun mapComponentQuantity(quantity: String, showUnit: Boolean, abbreviati
     }
 
 private fun mapEndpoint(endpoint: String) =
-    when (endpoint) {
-        StockEndpoints.ITEM1.endpoint -> {
-            STOCK_ITEM_1
-        }
-
-        StockEndpoints.ITEM2.endpoint -> {
-            STOCK_ITEM_2
-        }
-
-        StockEndpoints.ITEM3.endpoint -> {
-            STOCK_ITEM_3
-        }
-
-        StockEndpoints.ITEM4.endpoint -> {
-            STOCK_ITEM_4
-        }
-
-        StockEndpoints.ITEM5.endpoint -> {
-            STOCK_ITEM_5
-        }
-
-        else -> EMPTY
-    }
+    STOCK_ITEM_PREFIX + endpoint.substringAfterLast(COMPONENT_PATH_DELIMITER)
 

@@ -58,4 +58,6 @@
     <string name="test_tag_error_message">errorMessage</string>
 
     <string name="test_tag_stock_id">stockId</string>
+
+    <string name="test_tag_image_count">imageCount</string>
 </resources>

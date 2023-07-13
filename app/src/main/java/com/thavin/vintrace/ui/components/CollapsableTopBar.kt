@@ -25,6 +25,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
@@ -66,13 +68,35 @@ fun ExpandedTopBar(
             .height(DimenExpandedTopBarHeight)
     ) {
         HorizontalPager(state = pagerState) {
-            Image(
-                painter = painterResource(id = headerImages[it]),
-                contentDescription = stringResource(id = R.string.accessibility_header_image),
-                contentScale = ContentScale.Crop,
+
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
-            )
+            ) {
+                Image(
+                    painter = painterResource(id = headerImages[it]),
+                    contentDescription = stringResource(id = R.string.accessibility_header_image),
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxSize()
+                )
+
+                Text(
+                    text = (it + 1).toString() + " / ${headerImages.size}",
+                    color = Color.White.copy(alpha = 0.5f),
+                    style = Typography.labelMedium,
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(DimenSmall)
+                        .drawBehind {
+                            drawRoundRect(
+                                color = Color.Black.copy(alpha = 0.2f),
+                                cornerRadius = CornerRadius(x = 15f, y = 15f)
+                            )
+                        }
+                        .testTag(stringResource(id = R.string.test_tag_image_count))
+                )
+            }
         }
 
         NavBar(
