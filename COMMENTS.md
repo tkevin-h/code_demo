@@ -14,4 +14,4 @@
 # Additional Information
 - Fully unit tested the StockDetailsViewModel but due to time constraints I have not unit tested the domain and data layers
 - Not written any unit tests for the StockViewModel screen as this was designed initially for testing only and is not part
- of the requirements
+  of the requirement
